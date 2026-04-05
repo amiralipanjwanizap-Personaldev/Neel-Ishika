@@ -1,6 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { motion } from 'motion/react';
+import React, { useEffect, useState, useCallback } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { getGallery } from '../lib/api';
+import UploadSection from '../components/gallery/UploadSection';
+import GalleryGrid from '../components/gallery/GalleryGrid';
+import ImageModal from '../components/gallery/ImageModal';
 
 interface GalleryItem {
   id: string;
@@ -12,15 +15,31 @@ interface GalleryItem {
 export default function Gallery() {
   const [items, setItems] = useState<GalleryItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedItem, setSelectedItem] = useState<GalleryItem | null>(null);
+
+  const fetchData = useCallback(async () => {
+    const data = await getGallery();
+    setItems(data as GalleryItem[]);
+    setLoading(false);
+  }, []);
 
   useEffect(() => {
-    async function fetchData() {
-      const data = await getGallery();
-      setItems(data as GalleryItem[]);
-      setLoading(false);
-    }
     fetchData();
-  }, []);
+  }, [fetchData]);
+
+  const handleNext = useCallback(() => {
+    if (!selectedItem) return;
+    const currentIndex = items.findIndex(i => i.id === selectedItem.id);
+    const nextIndex = (currentIndex + 1) % items.length;
+    setSelectedItem(items[nextIndex]);
+  }, [selectedItem, items]);
+
+  const handlePrev = useCallback(() => {
+    if (!selectedItem) return;
+    const currentIndex = items.findIndex(i => i.id === selectedItem.id);
+    const prevIndex = (currentIndex - 1 + items.length) % items.length;
+    setSelectedItem(items[prevIndex]);
+  }, [selectedItem, items]);
 
   if (loading) {
     return (
@@ -43,41 +62,31 @@ export default function Gallery() {
         </p>
       </motion.div>
 
+      {/* Step 1: Upload Section */}
+      <UploadSection onUploadComplete={fetchData} />
+
       {items.length === 0 ? (
         <div className="text-center text-brand-navy/50 py-20">
           <p>Gallery will be updated with wedding photos soon!</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {items.map((item, i) => (
-            <motion.div
-              key={item.id}
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: (i % 6) * 0.1 }}
-              className="aspect-square bg-brand-navy/5 rounded-lg overflow-hidden relative group"
-            >
-              {item.type === 'video' ? (
-                <video
-                  src={item.file_url}
-                  className="w-full h-full object-cover"
-                  controls
-                  preload="metadata"
-                />
-              ) : (
-                <img
-                  src={item.file_url}
-                  alt="Gallery item"
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-                  loading="lazy"
-                  referrerPolicy="no-referrer"
-                />
-              )}
-            </motion.div>
-          ))}
-        </div>
+        <GalleryGrid 
+          items={items} 
+          onItemClick={(item) => setSelectedItem(item)} 
+        />
       )}
+
+      {/* Step 3: Modal Preview */}
+      <AnimatePresence>
+        {selectedItem && (
+          <ImageModal
+            item={selectedItem}
+            onClose={() => setSelectedItem(null)}
+            onNext={items.length > 1 ? handleNext : undefined}
+            onPrev={items.length > 1 ? handlePrev : undefined}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
