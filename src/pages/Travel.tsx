@@ -122,7 +122,7 @@ export default function Travel() {
       icon: <Ship className="w-6 h-6" />,
       title: "Ferry / Port Travel",
       summary: travelData?.ferry_info?.slice(0, 120) + (travelData?.ferry_info && travelData.ferry_info.length > 120 ? '...' : '') || "Information will be updated soon",
-      link: "https://www.azampay.com/ferry",
+      link: "https://www.azammarine.com",
       linkText: "View Ferry Details",
       color: "bg-orange-50 text-orange-600"
     }
