@@ -56,9 +56,20 @@ interface Settings {
   music_enabled: boolean;
   wedding_date: string;
   tagline: string;
+  homepage_template: string;
+  homepage_bg_url: string;
+  font_family: string;
 }
 
-type Tab = 'dashboard' | 'events' | 'gallery' | 'story' | 'travel' | 'settings';
+interface Page {
+  id: string;
+  title: string;
+  slug: string;
+  content: string;
+  created_at: string;
+}
+
+type Tab = 'dashboard' | 'events' | 'gallery' | 'story' | 'travel' | 'pages' | 'settings';
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
@@ -68,9 +79,17 @@ export default function Dashboard() {
   const [storyEntries, setStoryEntries] = useState<StoryEntry[]>([]);
   const [travelInfo, setTravelInfo] = useState<TravelInfo | null>(null);
   const [settings, setSettings] = useState<Settings | null>(null);
+  const [pages, setPages] = useState<Page[]>([]);
   const [loading, setLoading] = useState(true);
   
-  // Event Form State
+  // Page Form State
+  const [isPageModalOpen, setIsPageModalOpen] = useState(false);
+  const [editingPage, setEditingPage] = useState<Page | null>(null);
+  const [pageForm, setPageForm] = useState({
+    title: '',
+    slug: '',
+    content: ''
+  });
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const [eventForm, setEventForm] = useState({
@@ -112,7 +131,10 @@ export default function Dashboard() {
     music_url: '',
     music_enabled: true,
     wedding_date: '',
-    tagline: ''
+    tagline: '',
+    homepage_template: 'classic',
+    homepage_bg_url: '',
+    font_family: 'font-sans'
   });
 
   useEffect(() => {
@@ -122,6 +144,7 @@ export default function Dashboard() {
     fetchStory();
     fetchTravelInfo();
     fetchSettings();
+    fetchPages();
 
     // Subscribe to real-time updates
     const rsvpChannel = supabase
@@ -266,11 +289,27 @@ export default function Dashboard() {
           music_url: data.music_url || '',
           music_enabled: data.music_enabled ?? true,
           wedding_date: data.wedding_date || '',
-          tagline: data.tagline || ''
+          tagline: data.tagline || '',
+          homepage_template: data.homepage_template || 'classic',
+          homepage_bg_url: data.homepage_bg_url || '',
+          font_family: data.font_family || 'font-sans'
         });
       }
     } catch (error) {
       console.error('Error fetching settings:', error);
+    }
+  }
+
+  async function fetchPages() {
+    try {
+      const { data, error } = await supabase
+        .from('pages')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      setPages(data || []);
+    } catch (error) {
+      console.error('Error fetching pages:', error);
     }
   }
 
@@ -362,6 +401,41 @@ export default function Dashboard() {
     }
   }
 
+  async function handleSavePage(e: FormEvent) {
+    e.preventDefault();
+    try {
+      if (editingPage) {
+        const { error } = await supabase
+          .from('pages')
+          .update(pageForm)
+          .eq('id', editingPage.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('pages')
+          .insert([pageForm]);
+        if (error) throw error;
+      }
+      setIsPageModalOpen(false);
+      setEditingPage(null);
+      setPageForm({ title: '', slug: '', content: '' });
+      fetchPages();
+    } catch (error) {
+      alert('Error saving page');
+    }
+  }
+
+  async function handleDeletePage(id: string) {
+    if (!confirm('Are you sure you want to delete this page?')) return;
+    try {
+      const { error } = await supabase.from('pages').delete().eq('id', id);
+      if (error) throw error;
+      fetchPages();
+    } catch (error) {
+      alert('Error deleting page');
+    }
+  }
+
   async function handleSaveEvent(e: FormEvent) {
     e.preventDefault();
     try {
@@ -412,6 +486,16 @@ export default function Dashboard() {
     setIsEventModalOpen(true);
   };
 
+  const openEditPage = (page: Page) => {
+    setEditingPage(page);
+    setPageForm({
+      title: page.title,
+      slug: page.slug,
+      content: page.content
+    });
+    setIsPageModalOpen(true);
+  };
+
   const totalResponses = rsvps.length;
   const attendingCount = rsvps.filter(r => r.attending).length;
   const notAttendingCount = rsvps.filter(r => !r.attending).length;
@@ -426,6 +510,7 @@ export default function Dashboard() {
     { id: 'gallery', label: 'Gallery', icon: ImageIcon },
     { id: 'story', label: 'Story', icon: BookOpen },
     { id: 'travel', label: 'Travel', icon: Plane },
+    { id: 'pages', label: 'Pages', icon: Plus },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
@@ -973,6 +1058,85 @@ export default function Dashboard() {
               </motion.div>
             </div>
           )}
+
+          {/* Page Modal */}
+          {isPageModalOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="bg-white rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto"
+              >
+                <div className="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
+                  <h3 className="text-xl font-serif text-brand-navy">
+                    {editingPage ? 'Edit Page' : 'Create New Page'}
+                  </h3>
+                  <button onClick={() => setIsPageModalOpen(false)} className="text-gray-400 hover:text-gray-600">
+                    <X size={24} />
+                  </button>
+                </div>
+                <form onSubmit={handleSavePage} className="p-6 space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-1">
+                      <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Page Title</label>
+                      <input
+                        required
+                        type="text"
+                        value={pageForm.title}
+                        onChange={(e) => {
+                          const title = e.target.value;
+                          const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+                          setPageForm({ ...pageForm, title, slug: editingPage ? pageForm.slug : slug });
+                        }}
+                        className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-brand-gold outline-none"
+                        placeholder="e.g. Gift Registry"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">URL Slug</label>
+                      <div className="flex items-center gap-2">
+                        <span className="text-gray-400 text-sm">/page/</span>
+                        <input
+                          required
+                          type="text"
+                          value={pageForm.slug}
+                          onChange={(e) => setPageForm({ ...pageForm, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]+/g, '') })}
+                          className="flex-1 px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-brand-gold outline-none"
+                          placeholder="gift-registry"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Content (Markdown/HTML supported)</label>
+                    <textarea
+                      required
+                      value={pageForm.content}
+                      onChange={(e) => setPageForm({ ...pageForm, content: e.target.value })}
+                      className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-brand-gold outline-none min-h-[400px] font-mono text-sm"
+                      placeholder="Write your page content here..."
+                    />
+                  </div>
+                  <div className="pt-4 flex gap-3">
+                    <button
+                      type="submit"
+                      className="flex-1 bg-brand-navy text-white py-3 rounded-lg font-medium hover:bg-brand-gold transition-colors flex items-center justify-center gap-2"
+                    >
+                      <Save size={18} />
+                      {editingPage ? 'Update Page' : 'Create Page'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setIsPageModalOpen(false)}
+                      className="px-6 py-3 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              </motion.div>
+            </div>
+          )}
         </div>
       )}
 
@@ -1062,6 +1226,70 @@ export default function Dashboard() {
         </div>
       )}
 
+      {activeTab === 'pages' && (
+        <div className="space-y-6">
+          <div className="flex justify-between items-center">
+            <h2 className="text-2xl font-serif text-brand-navy">Dynamic Pages</h2>
+            <button
+              onClick={() => {
+                setEditingPage(null);
+                setPageForm({ title: '', slug: '', content: '' });
+                setIsPageModalOpen(true);
+              }}
+              className="flex items-center gap-2 bg-brand-navy text-white px-4 py-2 rounded-lg hover:bg-brand-gold transition-colors"
+            >
+              <Plus size={18} />
+              Add Page
+            </button>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <table className="w-full text-left text-sm">
+              <thead className="bg-gray-50 text-gray-600">
+                <tr>
+                  <th className="px-6 py-3 font-medium">Title</th>
+                  <th className="px-6 py-3 font-medium">Slug</th>
+                  <th className="px-6 py-3 font-medium">Created</th>
+                  <th className="px-6 py-3 font-medium text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {pages.map((page) => (
+                  <tr key={page.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 font-medium text-gray-900">{page.title}</td>
+                    <td className="px-6 py-4 text-gray-600">/page/{page.slug}</td>
+                    <td className="px-6 py-4 text-gray-500">
+                      {new Date(page.created_at).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 text-right space-x-2">
+                      <button
+                        onClick={() => openEditPage(page)}
+                        className="p-2 text-gray-400 hover:text-brand-gold transition-colors"
+                      >
+                        <Edit2 size={18} />
+                      </button>
+                      <button
+                        onClick={() => handleDeletePage(page.id)}
+                        className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+                {pages.length === 0 && (
+                  <tr>
+                    <td colSpan={4} className="px-6 py-8 text-center text-gray-500">
+                      No dynamic pages created yet.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
       {activeTab === 'settings' && (
         <div className="max-w-4xl mx-auto space-y-6">
           <div className="flex justify-between items-center">
@@ -1103,6 +1331,48 @@ export default function Dashboard() {
                   className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-brand-gold outline-none"
                   placeholder="e.g. A Celebration of Love"
                 />
+              </div>
+            </div>
+
+            {/* Homepage Section */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-serif text-brand-navy border-b pb-2">Homepage & CMS</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Homepage Template</label>
+                  <select
+                    value={settingsForm.homepage_template}
+                    onChange={(e) => setSettingsForm({ ...settingsForm, homepage_template: e.target.value })}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-brand-gold outline-none"
+                  >
+                    <option value="classic">Classic (Centered, Serif)</option>
+                    <option value="modern">Modern (Split, Bold)</option>
+                    <option value="luxury">Luxury (Full-screen, Animated)</option>
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Global Font Family</label>
+                  <select
+                    value={settingsForm.font_family}
+                    onChange={(e) => setSettingsForm({ ...settingsForm, font_family: e.target.value })}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-brand-gold outline-none"
+                  >
+                    <option value="font-sans">Sans Serif (Inter)</option>
+                    <option value="font-serif">Serif (Elegant)</option>
+                    <option value="font-mono">Monospace (Modern Tech)</option>
+                  </select>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Homepage Background Image URL</label>
+                <input
+                  type="url"
+                  value={settingsForm.homepage_bg_url}
+                  onChange={(e) => setSettingsForm({ ...settingsForm, homepage_bg_url: e.target.value })}
+                  className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-brand-gold outline-none"
+                  placeholder="https://images.unsplash.com/..."
+                />
+                <p className="text-xs text-gray-500">This image will be used as the main background for your selected template.</p>
               </div>
             </div>
 

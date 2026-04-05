@@ -1,5 +1,5 @@
-import { motion } from 'motion/react';
-import { Link, useOutletContext } from 'react-router-dom';
+import { useOutletContext } from 'react-router-dom';
+import { ClassicTemplate, ModernTemplate, LuxuryTemplate } from '../components/home/Templates';
 
 interface Settings {
   logo_url?: string;
@@ -7,47 +7,35 @@ interface Settings {
   music_enabled?: boolean;
   tagline?: string;
   wedding_date?: string;
+  homepage_template?: 'classic' | 'modern' | 'luxury';
+  homepage_bg_url?: string;
+  font_family?: string;
 }
 
 export default function Home() {
   const { settings } = useOutletContext<{ settings: Settings | null }>();
 
+  const template = settings?.homepage_template || 'classic';
+  const names = "Neel & Ishika"; // In a real CMS, this could also be in settings
+  const date = settings?.wedding_date || "August 24, 2024";
+  const tagline = settings?.tagline || "A Celebration of Love";
+  const bgUrl = settings?.homepage_bg_url || "https://images.unsplash.com/photo-1544376798-89aa6b82c6cd?q=80&w=2574&auto=format&fit=crop";
+
+  const renderTemplate = () => {
+    switch (template) {
+      case 'modern':
+        return <ModernTemplate names={names} date={date} tagline={tagline} bgUrl={bgUrl} />;
+      case 'luxury':
+        return <LuxuryTemplate names={names} date={date} tagline={tagline} bgUrl={bgUrl} />;
+      case 'classic':
+      default:
+        return <ClassicTemplate names={names} date={date} tagline={tagline} bgUrl={bgUrl} />;
+    }
+  };
+
   return (
-    <div className="min-h-[calc(100vh-5rem)] flex flex-col items-center justify-center text-center px-4 relative overflow-hidden">
-      {/* Background Image Placeholder */}
-      <div 
-        className="absolute inset-0 z-0 opacity-20"
-        style={{
-          backgroundImage: 'url("https://images.unsplash.com/photo-1544376798-89aa6b82c6cd?q=80&w=2574&auto=format&fit=crop")',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
-      />
-      
-      <div className="relative z-10 max-w-3xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
-        >
-          <p className="text-brand-gold tracking-[0.2em] uppercase text-sm mb-6">
-            {settings?.wedding_date || "Zanzibar • 2026"}
-          </p>
-          <h1 className="text-6xl md:text-8xl font-serif text-brand-navy mb-8">
-            Neel & Ishika
-          </h1>
-          <p className="text-lg md:text-xl text-brand-navy/80 mb-12 font-light max-w-xl mx-auto leading-relaxed">
-            {settings?.tagline || "Invite you to celebrate their wedding in the beautiful island of Zanzibar."}
-          </p>
-          
-          <Link 
-            to="/schedule"
-            className="inline-block bg-brand-navy text-brand-cream px-8 py-4 uppercase tracking-widest text-sm hover:bg-brand-gold transition-colors duration-300"
-          >
-            View Details
-          </Link>
-        </motion.div>
-      </div>
+    <div className="min-h-screen">
+      {renderTemplate()}
     </div>
   );
 }

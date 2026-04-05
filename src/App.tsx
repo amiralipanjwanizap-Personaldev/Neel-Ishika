@@ -11,6 +11,7 @@ import Travel from './pages/Travel';
 import RSVP from './pages/RSVP';
 import Gallery from './pages/Gallery';
 import Story from './pages/Story';
+import DynamicPage from './pages/DynamicPage';
 import AdminLayout from './components/AdminLayout';
 import Login from './pages/admin/Login';
 import Dashboard from './pages/admin/Dashboard';
@@ -28,6 +29,7 @@ export default function App() {
           <Route path="rsvp" element={<RSVP />} />
           <Route path="gallery" element={<Gallery />} />
           <Route path="story" element={<Story />} />
+          <Route path="page/:slug" element={<DynamicPage />} />
         </Route>
 
         {/* Admin Routes */}

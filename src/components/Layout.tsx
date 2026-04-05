@@ -21,6 +21,9 @@ interface Settings {
   wedding_date?: string;
   primary_color?: string;
   secondary_color?: string;
+  homepage_template?: string;
+  homepage_bg_url?: string;
+  font_family?: string;
 }
 
 export default function Layout() {
@@ -61,8 +64,10 @@ export default function Layout() {
     }
   };
 
+  const fontClass = settings?.font_family || 'font-sans';
+
   return (
-    <div className="min-h-screen flex flex-col" style={{
+    <div className={`min-h-screen flex flex-col ${fontClass}`} style={{
       ['--brand-primary' as any]: settings?.primary_color || '#1F3A5F',
       ['--brand-secondary' as any]: settings?.secondary_color || '#C9A46C',
     }}>
