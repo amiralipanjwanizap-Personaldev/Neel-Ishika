@@ -72,7 +72,7 @@ export default function Travel() {
     {
       icon: <Plane className="w-6 h-6" />,
       title: "Flights & Airport",
-      summary: "Fly into Abeid Amani Karume International Airport (ZNZ). Direct flights available from major hubs.",
+      summary: travelData?.airport_info || "Information will be updated soon",
       link: "https://www.skyscanner.com",
       linkText: "Search Flights",
       color: "bg-blue-50 text-blue-600"
@@ -80,23 +80,23 @@ export default function Travel() {
     {
       icon: <FileText className="w-6 h-6" />,
       title: "Visa Requirements",
-      summary: "Most visitors require a visa. Apply for an e-Visa online at least 2 weeks before travel.",
-      link: travelData?.visa_link || "https://visa.immigration.go.tz/",
-      linkText: "Apply for e-Visa",
+      summary: travelData ? "Most visitors require a visa. Apply for an e-Visa online at least 2 weeks before travel." : "Information will be updated soon",
+      link: travelData?.visa_link || "#",
+      linkText: travelData?.visa_link ? "Apply for e-Visa" : "Coming Soon",
       color: "bg-purple-50 text-purple-600"
     },
     {
       icon: <Shield className="w-6 h-6" />,
       title: "Travel Insurance",
-      summary: "Mandatory inbound travel insurance is required for all visitors entering Zanzibar.",
-      link: travelData?.insurance_link || "https://visitzanzibar.go.tz/",
-      linkText: "Get Insurance",
+      summary: travelData ? "Mandatory inbound travel insurance is required for all visitors entering Zanzibar." : "Information will be updated soon",
+      link: travelData?.insurance_link || "#",
+      linkText: travelData?.insurance_link ? "Get Insurance" : "Coming Soon",
       color: "bg-green-50 text-green-600"
     },
     {
       icon: <Ship className="w-6 h-6" />,
       title: "Ferry / Port Travel",
-      summary: "Fast ferries operate daily between Dar es Salaam and Zanzibar. Journey takes approx. 2 hours.",
+      summary: travelData?.ferry_info || "Information will be updated soon",
       link: "https://www.azampay.com/ferry",
       linkText: "View Ferry Details",
       color: "bg-orange-50 text-orange-600"
