@@ -162,7 +162,11 @@ export default function RSVP() {
         <button
           type="submit"
           disabled={status === 'submitting'}
-          className="w-full bg-brand-navy text-brand-cream py-4 uppercase tracking-widest text-sm hover:bg-brand-gold transition-colors duration-300 disabled:opacity-50"
+          style={{ 
+            backgroundColor: "var(--brand-primary)", 
+            color: "var(--brand-bg, #F5E9DA)" 
+          }}
+          className="w-full py-4 uppercase tracking-widest text-sm hover:opacity-90 transition-opacity duration-300 disabled:opacity-50"
         >
           {status === 'submitting' ? 'Submitting...' : 'Send RSVP'}
         </button>

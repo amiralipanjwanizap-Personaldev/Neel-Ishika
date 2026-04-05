@@ -1,9 +1,14 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { Menu, X, Music, Music2, Lock } from 'lucide-react';
+import { Lock } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { getSettings } from '../lib/api';
 import { supabase } from '../lib/supabase';
+import { Navbar1 } from './navbar/Navbar1';
+import { Navbar2 } from './navbar/Navbar2';
+import { Navbar3 } from './navbar/Navbar3';
+import { Navbar4 } from './navbar/Navbar4';
+import { Navbar5 } from './navbar/Navbar5';
 
 const navLinks = [
   { name: 'Home', path: '/' },
@@ -26,7 +31,18 @@ interface Settings {
   homepage_template?: string;
   homepage_bg_url?: string;
   font_family?: string;
+  navbar_template?: string;
+  navbar_bg_color?: string;
+  navbar_text_color?: string;
 }
+
+const navbars: Record<string, any> = {
+  navbar1: Navbar1,
+  navbar2: Navbar2,
+  navbar3: Navbar3,
+  navbar4: Navbar4,
+  navbar5: Navbar5,
+};
 
 export default function Layout() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -82,68 +98,44 @@ export default function Layout() {
 
   const fontClass = settings?.font_family || 'font-sans';
 
+  const hexToRgb = (hex: string) => {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : null;
+  };
+
+  useEffect(() => {
+    if (settings) {
+      const root = document.documentElement;
+      const primary = settings.primary_color || '#1F3A5F';
+      const secondary = settings.secondary_color || '#C9A46C';
+      const text = settings.text_color || '#000000';
+      
+      root.style.setProperty('--brand-primary', primary);
+      root.style.setProperty('--brand-secondary', secondary);
+      root.style.setProperty('--brand-text', text);
+      root.style.setProperty('--brand-bg', '#F5E9DA');
+      
+      const primaryRgb = hexToRgb(primary);
+      if (primaryRgb) root.style.setProperty('--brand-primary-rgb', primaryRgb);
+      
+      const secondaryRgb = hexToRgb(secondary);
+      if (secondaryRgb) root.style.setProperty('--brand-secondary-rgb', secondaryRgb);
+    }
+  }, [settings]);
+
+  const SelectedNavbar = navbars[settings?.navbar_template || 'navbar1'] || Navbar1;
+
   return (
-    <div className={`min-h-screen flex flex-col ${fontClass}`} style={{
-      ['--brand-primary' as any]: settings?.primary_color || '#1F3A5F',
-      ['--brand-secondary' as any]: settings?.secondary_color || '#C9A46C',
-      ['--brand-text' as any]: settings?.text_color || '#000000',
-    }}>
-      <header className="fixed w-full z-50 bg-brand-cream/90 backdrop-blur-sm border-b border-brand-gold/20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            <Link to="/" className="font-serif text-2xl text-brand-navy flex items-center gap-3">
-              {settings?.logo_url ? (
-                <img src={settings.logo_url} alt="Wedding Logo" className="h-12 w-auto object-contain" referrerPolicy="no-referrer" />
-              ) : (
-                "N & I"
-              )}
-            </Link>
-
-            {/* Desktop Nav */}
-            <nav className="hidden md:flex space-x-8 items-center">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  to={link.path}
-                  className={`text-sm tracking-widest uppercase transition-colors hover:text-brand-gold ${
-                    location.pathname === link.path ? 'text-brand-gold font-medium' : 'text-brand-navy'
-                  }`}
-                >
-                  {link.name}
-                </Link>
-              ))}
-              {settings?.music_enabled !== false && (
-                <button 
-                  onClick={toggleMusic}
-                  className="p-2 text-brand-navy hover:text-brand-gold transition-colors"
-                  aria-label="Toggle music"
-                >
-                  {isPlaying ? <Music size={20} /> : <Music2 size={20} className="opacity-50" />}
-                </button>
-              )}
-            </nav>
-
-            {/* Mobile Menu Button */}
-            <div className="md:hidden flex items-center gap-4">
-              {settings?.music_enabled !== false && (
-                <button 
-                  onClick={toggleMusic}
-                  className="p-2 text-brand-navy"
-                  aria-label="Toggle music"
-                >
-                  {isPlaying ? <Music size={20} /> : <Music2 size={20} className="opacity-50" />}
-                </button>
-              )}
-              <button
-                className="p-2 text-brand-navy"
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-              >
-                {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
+    <div className={`min-h-screen flex flex-col ${fontClass}`}>
+      <SelectedNavbar 
+        settings={settings}
+        navLinks={navLinks}
+        location={location}
+        isMenuOpen={isMenuOpen}
+        setIsMenuOpen={setIsMenuOpen}
+        isPlaying={isPlaying}
+        toggleMusic={toggleMusic}
+      />
 
       {/* Mobile Nav */}
       <AnimatePresence>
@@ -152,7 +144,8 @@ export default function Layout() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="fixed inset-0 z-40 bg-brand-cream pt-24 px-4 md:hidden"
+            className="fixed inset-0 z-40 pt-24 px-4 md:hidden"
+            style={{ backgroundColor: settings?.navbar_bg_color || "var(--brand-bg, #F5E9DA)" }}
           >
             <nav className="flex flex-col space-y-6 text-center">
               {navLinks.map((link) => (
@@ -160,9 +153,10 @@ export default function Layout() {
                   key={link.name}
                   to={link.path}
                   onClick={() => setIsMenuOpen(false)}
-                  className={`font-serif text-3xl transition-colors hover:text-brand-gold ${
-                    location.pathname === link.path ? 'text-brand-gold' : 'text-brand-navy'
+                  className={`font-serif text-3xl transition-colors hover:opacity-70 ${
+                    location.pathname === link.path ? 'font-bold' : ''
                   }`}
+                  style={{ color: settings?.navbar_text_color || "var(--brand-primary, #1F3A5F)" }}
                 >
                   {link.name}
                 </Link>
@@ -176,7 +170,13 @@ export default function Layout() {
         <Outlet context={{ settings }} />
       </main>
 
-      <footer className="bg-brand-navy text-brand-cream py-12 text-center relative">
+      <footer 
+        className="py-12 text-center relative"
+        style={{ 
+          backgroundColor: "var(--brand-primary)", 
+          color: "var(--brand-bg, #F5E9DA)" 
+        }}
+      >
         <p className="font-serif text-xl mb-4">Neel & Ishika</p>
         <p className="text-sm opacity-70 tracking-widest uppercase">
           {settings?.wedding_date ? `Zanzibar • ${settings.wedding_date}` : "Zanzibar • 2026"}

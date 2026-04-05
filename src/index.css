@@ -14,9 +14,29 @@
 }
 
 body {
-  background-color: var(--color-brand-cream);
-  color: var(--color-brand-text);
+  background-color: var(--brand-bg, #F5E9DA);
+  color: var(--brand-text, #000000);
   font-family: var(--font-sans);
+}
+
+.primary-bg {
+  background-color: var(--brand-primary);
+}
+
+.secondary-bg {
+  background-color: var(--brand-secondary);
+}
+
+.text-theme {
+  color: var(--brand-text);
+}
+
+.primary-text {
+  color: var(--brand-primary);
+}
+
+.secondary-text {
+  color: var(--brand-secondary);
 }
 
 h1, h2, h3, h4, h5, h6 {

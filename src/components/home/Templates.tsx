@@ -45,19 +45,28 @@ export const ModernTemplate = ({ names, date, tagline, bgUrl }: TemplateProps) =
         animate={{ opacity: 1, x: 0 }}
         className="space-y-8"
       >
-        <p className="text-brand-gold font-bold tracking-[0.2em] uppercase text-sm">
+        <p 
+          className="font-bold tracking-[0.2em] uppercase text-sm"
+          style={{ color: "var(--brand-secondary)" }}
+        >
           {tagline}
         </p>
-        <h1 className="text-5xl md:text-7xl font-bold text-brand-navy leading-none tracking-tighter">
+        <h1 
+          className="text-5xl md:text-7xl font-bold leading-none tracking-tighter"
+          style={{ color: "var(--brand-primary)" }}
+        >
           {names.split('&').map((name, i) => (
             <React.Fragment key={i}>
-              {i > 0 && <span className="block text-brand-gold text-4xl my-2">&</span>}
+              {i > 0 && <span className="block text-4xl my-2" style={{ color: "var(--brand-secondary)" }}>&</span>}
               <span className="block">{name.trim()}</span>
             </React.Fragment>
           ))}
         </h1>
         <div className="pt-8">
-          <p className="text-2xl font-medium text-brand-navy/60 border-l-4 border-brand-gold pl-6">
+          <p 
+            className="text-2xl font-medium border-l-4 pl-6"
+            style={{ color: "rgba(var(--brand-primary-rgb, 31, 58, 95), 0.6)", borderLeftColor: "var(--brand-secondary)" }}
+          >
             {date}
           </p>
         </div>
@@ -80,7 +89,10 @@ export const ModernTemplate = ({ names, date, tagline, bgUrl }: TemplateProps) =
 );
 
 export const LuxuryTemplate = ({ names, date, tagline, bgUrl }: TemplateProps) => (
-  <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-brand-navy">
+  <div 
+    className="relative min-h-screen flex items-center justify-center overflow-hidden"
+    style={{ backgroundColor: "var(--brand-primary)" }}
+  >
     {bgUrl && (
       <motion.div 
         initial={{ scale: 1.1 }}
@@ -90,7 +102,12 @@ export const LuxuryTemplate = ({ names, date, tagline, bgUrl }: TemplateProps) =
         style={{ backgroundImage: `url(${bgUrl})` }}
       />
     )}
-    <div className="absolute inset-0 bg-gradient-to-b from-brand-navy/80 via-transparent to-brand-navy/80 z-10" />
+    <div 
+      className="absolute inset-0 z-10" 
+      style={{ 
+        background: "linear-gradient(to bottom, rgba(var(--brand-primary-rgb, 31, 58, 95), 0.8), transparent, rgba(var(--brand-primary-rgb, 31, 58, 95), 0.8))" 
+      }}
+    />
     
     <motion.div 
       initial={{ opacity: 0 }}
@@ -104,19 +121,28 @@ export const LuxuryTemplate = ({ names, date, tagline, bgUrl }: TemplateProps) =
         transition={{ delay: 0.5, duration: 1 }}
         className="mb-12"
       >
-        <div className="w-20 h-20 border-2 border-brand-gold rounded-full mx-auto flex items-center justify-center mb-6">
-          <span className="text-brand-gold text-3xl font-serif">
+        <div 
+          className="w-20 h-20 border-2 rounded-full mx-auto flex items-center justify-center mb-6"
+          style={{ borderColor: "var(--brand-secondary)" }}
+        >
+          <span className="text-3xl font-serif" style={{ color: "var(--brand-secondary)" }}>
             {names.split('&').map(n => n.trim()[0]).join('')}
           </span>
         </div>
-        <div className="h-px w-32 bg-gradient-to-r from-transparent via-brand-gold to-transparent mx-auto" />
+        <div 
+          className="h-px w-32 mx-auto"
+          style={{ background: "linear-gradient(to right, transparent, var(--brand-secondary), transparent)" }}
+        />
       </motion.div>
 
       <h1 className="text-5xl md:text-8xl font-serif text-white mb-8 tracking-wider uppercase">
         {names}
       </h1>
       
-      <p className="text-brand-gold text-xl md:text-2xl tracking-[0.5em] uppercase font-light">
+      <p 
+        className="text-xl md:text-2xl tracking-[0.5em] uppercase font-light"
+        style={{ color: "var(--brand-secondary)" }}
+      >
         {date}
       </p>
       
