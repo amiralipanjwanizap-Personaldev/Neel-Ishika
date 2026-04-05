@@ -59,6 +59,9 @@ interface Settings {
   homepage_template: string;
   homepage_bg_url: string;
   font_family: string;
+  navbar_template: string;
+  navbar_bg_color: string;
+  navbar_text_color: string;
 }
 
 interface Page {
@@ -134,7 +137,10 @@ export default function Dashboard() {
     tagline: '',
     homepage_template: 'classic',
     homepage_bg_url: '',
-    font_family: 'font-sans'
+    font_family: 'font-sans',
+    navbar_template: 'navbar1',
+    navbar_bg_color: '',
+    navbar_text_color: ''
   });
 
   useEffect(() => {
@@ -292,7 +298,10 @@ export default function Dashboard() {
           tagline: data.tagline || '',
           homepage_template: data.homepage_template || 'classic',
           homepage_bg_url: data.homepage_bg_url || '',
-          font_family: data.font_family || 'font-sans'
+          font_family: data.font_family || 'font-sans',
+          navbar_template: data.navbar_template || 'navbar1',
+          navbar_bg_color: data.navbar_bg_color || '',
+          navbar_text_color: data.navbar_text_color || ''
         });
       }
     } catch (error) {
@@ -1373,6 +1382,65 @@ export default function Dashboard() {
                   placeholder="https://images.unsplash.com/..."
                 />
                 <p className="text-xs text-gray-500">This image will be used as the main background for your selected template.</p>
+              </div>
+            </div>
+
+            {/* Navbar Section */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-serif text-brand-navy border-b pb-2">Navbar Settings</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Navbar Template</label>
+                  <select
+                    value={settingsForm.navbar_template}
+                    onChange={(e) => setSettingsForm({ ...settingsForm, navbar_template: e.target.value })}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-brand-gold outline-none"
+                  >
+                    <option value="navbar1">Navbar 1 (Classic Elegant)</option>
+                    <option value="navbar2">Navbar 2 (Modern Minimal)</option>
+                    <option value="navbar3">Navbar 3 (Transparent Overlay)</option>
+                    <option value="navbar4">Navbar 4 (Split Layout)</option>
+                    <option value="navbar5">Navbar 5 (Button Style)</option>
+                  </select>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Navbar Background Color</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="color"
+                      value={settingsForm.navbar_bg_color || '#F5E9DA'}
+                      onChange={(e) => setSettingsForm({ ...settingsForm, navbar_bg_color: e.target.value })}
+                      className="h-10 w-10 rounded border border-gray-200 cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={settingsForm.navbar_bg_color}
+                      onChange={(e) => setSettingsForm({ ...settingsForm, navbar_bg_color: e.target.value })}
+                      className="flex-1 px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-brand-gold outline-none font-mono text-sm"
+                      placeholder="#F5E9DA"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Navbar Text Color</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="color"
+                      value={settingsForm.navbar_text_color || '#1F3A5F'}
+                      onChange={(e) => setSettingsForm({ ...settingsForm, navbar_text_color: e.target.value })}
+                      className="h-10 w-10 rounded border border-gray-200 cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={settingsForm.navbar_text_color}
+                      onChange={(e) => setSettingsForm({ ...settingsForm, navbar_text_color: e.target.value })}
+                      className="flex-1 px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-brand-gold outline-none font-mono text-sm"
+                      placeholder="#1F3A5F"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
 
