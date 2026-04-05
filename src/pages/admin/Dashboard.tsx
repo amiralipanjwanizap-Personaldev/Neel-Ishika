@@ -97,7 +97,9 @@ export default function Dashboard() {
   const [travelForm, setTravelForm] = useState({
     visa_link: '',
     insurance_link: '',
-    airport_info: '',
+    arrival_steps: '',
+    required_documents: '',
+    travel_tips: '',
     ferry_info: ''
   });
 
@@ -210,10 +212,35 @@ export default function Dashboard() {
       if (error) throw error;
       if (data) {
         setTravelInfo(data);
+        
+        // Parse airport_info if it follows the structured format
+        const airportInfo = data.airport_info || '';
+        let arrivalSteps = '';
+        let documents = '';
+        let tips = '';
+
+        if (airportInfo.includes('ARRIVAL_STEPS:')) {
+          const sections = airportInfo.split(/\n\n(?=[A-Z_]+:)/);
+          sections.forEach((section: string) => {
+            if (section.startsWith('ARRIVAL_STEPS:')) {
+              arrivalSteps = section.replace('ARRIVAL_STEPS:', '').trim();
+            } else if (section.startsWith('DOCUMENTS:')) {
+              documents = section.replace('DOCUMENTS:', '').trim();
+            } else if (section.startsWith('TIPS:')) {
+              tips = section.replace('TIPS:', '').trim();
+            }
+          });
+        } else {
+          // Legacy format: put everything in arrival steps
+          arrivalSteps = airportInfo;
+        }
+
         setTravelForm({
           visa_link: data.visa_link || '',
           insurance_link: data.insurance_link || '',
-          airport_info: data.airport_info || '',
+          arrival_steps: arrivalSteps,
+          required_documents: documents,
+          travel_tips: tips,
           ferry_info: data.ferry_info || ''
         });
       }
@@ -272,16 +299,25 @@ export default function Dashboard() {
   async function handleSaveTravel(e: FormEvent) {
     e.preventDefault();
     try {
+      const formattedAirportInfo = `ARRIVAL_STEPS:\n${travelForm.arrival_steps}\n\nDOCUMENTS:\n${travelForm.required_documents}\n\nTIPS:\n${travelForm.travel_tips}`;
+      
+      const payload = {
+        visa_link: travelForm.visa_link,
+        insurance_link: travelForm.insurance_link,
+        airport_info: formattedAirportInfo,
+        ferry_info: travelForm.ferry_info
+      };
+
       if (travelInfo) {
         const { error } = await supabase
           .from('travel_info')
-          .update(travelForm)
+          .update(payload)
           .eq('id', travelInfo.id);
         if (error) throw error;
       } else {
         const { error } = await supabase
           .from('travel_info')
-          .insert([travelForm]);
+          .insert([payload]);
         if (error) throw error;
       }
       alert('Travel information updated successfully!');
@@ -970,18 +1006,41 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Airport Information</label>
-              <textarea
-                value={travelForm.airport_info}
-                onChange={(e) => setTravelForm({ ...travelForm, airport_info: e.target.value })}
-                className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-brand-gold outline-none min-h-[100px]"
-                placeholder="Details about the nearest airport, transport, etc."
-              />
+            <div className="space-y-4">
+              <h3 className="text-lg font-serif text-brand-navy border-b pb-2">Airport & Arrival</h3>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Arrival Steps</label>
+                  <textarea
+                    value={travelForm.arrival_steps}
+                    onChange={(e) => setTravelForm({ ...travelForm, arrival_steps: e.target.value })}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-brand-gold outline-none min-h-[100px]"
+                    placeholder="Step-by-step instructions after landing..."
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Required Documents</label>
+                  <textarea
+                    value={travelForm.required_documents}
+                    onChange={(e) => setTravelForm({ ...travelForm, required_documents: e.target.value })}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-brand-gold outline-none min-h-[100px]"
+                    placeholder="List of documents needed for entry..."
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Travel Tips</label>
+                  <textarea
+                    value={travelForm.travel_tips}
+                    onChange={(e) => setTravelForm({ ...travelForm, travel_tips: e.target.value })}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-brand-gold outline-none min-h-[100px]"
+                    placeholder="Local tips, currency, connectivity, etc."
+                  />
+                </div>
+              </div>
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Ferry Information</label>
+              <label className="text-sm font-medium text-gray-700 font-serif text-brand-navy border-b pb-2 block">Ferry & Port Information</label>
               <textarea
                 value={travelForm.ferry_info}
                 onChange={(e) => setTravelForm({ ...travelForm, ferry_info: e.target.value })}

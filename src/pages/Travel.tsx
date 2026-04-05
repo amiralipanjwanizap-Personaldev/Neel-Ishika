@@ -60,6 +60,25 @@ export default function Travel() {
     fetchData();
   }, []);
 
+  const parseAirportInfo = (info: string | undefined) => {
+    if (!info) return null;
+    if (!info.includes('ARRIVAL_STEPS:')) {
+      return { legacy: info };
+    }
+
+    const sections: { [key: string]: string } = {};
+    const parts = info.split(/\n\n(?=[A-Z_]+:)/);
+    parts.forEach(part => {
+      const [header, ...content] = part.split(':');
+      if (header && content.length > 0) {
+        sections[header.trim()] = content.join(':').trim();
+      }
+    });
+    return sections;
+  };
+
+  const parsedAirportInfo = parseAirportInfo(travelData?.airport_info);
+
   if (loading) {
     return (
       <div className="min-h-[60vh] flex justify-center items-center">
@@ -68,11 +87,17 @@ export default function Travel() {
     );
   }
 
+  const getAirportSummary = () => {
+    if (!parsedAirportInfo) return "Information will be updated soon";
+    if (parsedAirportInfo.legacy) return parsedAirportInfo.legacy.slice(0, 120) + (parsedAirportInfo.legacy.length > 120 ? '...' : '');
+    return parsedAirportInfo.ARRIVAL_STEPS?.slice(0, 120) + (parsedAirportInfo.ARRIVAL_STEPS?.length > 120 ? '...' : '') || "Information will be updated soon";
+  };
+
   const infoCards = [
     {
       icon: <Plane className="w-6 h-6" />,
       title: "Flights & Airport",
-      summary: travelData?.airport_info || "Information will be updated soon",
+      summary: getAirportSummary(),
       link: "https://www.skyscanner.com",
       linkText: "Search Flights",
       color: "bg-blue-50 text-blue-600"
@@ -96,7 +121,7 @@ export default function Travel() {
     {
       icon: <Ship className="w-6 h-6" />,
       title: "Ferry / Port Travel",
-      summary: travelData?.ferry_info || "Information will be updated soon",
+      summary: travelData?.ferry_info?.slice(0, 120) + (travelData?.ferry_info && travelData.ferry_info.length > 120 ? '...' : '') || "Information will be updated soon",
       link: "https://www.azampay.com/ferry",
       linkText: "View Ferry Details",
       color: "bg-orange-50 text-orange-600"
@@ -158,49 +183,41 @@ export default function Travel() {
         </div>
         
         <div className="bg-white rounded-[2rem] border border-brand-navy/5 shadow-sm p-4 md:p-8">
-          <AccordionItem title="Arrival Steps">
-            <ul className="space-y-4 list-disc pl-5">
-              <li>Upon arrival at ZNZ, proceed to Immigration with your e-Visa or apply for Visa on Arrival.</li>
-              <li>Collect your luggage from the carousel area.</li>
-              <li>Pass through Customs (ensure you've declared any restricted items).</li>
-              <li>Our pre-arranged shuttles will be waiting outside the arrivals hall with a sign featuring our wedding logo.</li>
-              <li>The journey to the resort takes approximately 60-90 minutes depending on traffic.</li>
-            </ul>
-          </AccordionItem>
+          {parsedAirportInfo?.legacy ? (
+            <AccordionItem title="Airport Information">
+              <p className="whitespace-pre-wrap">{parsedAirportInfo.legacy}</p>
+            </AccordionItem>
+          ) : (
+            <>
+              {parsedAirportInfo?.ARRIVAL_STEPS && (
+                <AccordionItem title="Arrival Steps">
+                  <p className="whitespace-pre-wrap">{parsedAirportInfo.ARRIVAL_STEPS}</p>
+                </AccordionItem>
+              )}
+              {parsedAirportInfo?.DOCUMENTS && (
+                <AccordionItem title="Required Documents">
+                  <p className="whitespace-pre-wrap">{parsedAirportInfo.DOCUMENTS}</p>
+                </AccordionItem>
+              )}
+              {parsedAirportInfo?.TIPS && (
+                <AccordionItem title="Travel Tips">
+                  <p className="whitespace-pre-wrap">{parsedAirportInfo.TIPS}</p>
+                </AccordionItem>
+              )}
+            </>
+          )}
 
-          <AccordionItem title="Required Documents">
-            <div className="space-y-4">
-              <p>Please ensure you have the following documents ready before your flight:</p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-                <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
-                  <span className="font-bold text-brand-navy block mb-1">Passport</span>
-                  <span className="text-sm">Valid for at least 6 months from date of entry.</span>
-                </div>
-                <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
-                  <span className="font-bold text-brand-navy block mb-1">e-Visa</span>
-                  <span className="text-sm">Printed copy of your approved e-Visa.</span>
-                </div>
-                <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
-                  <span className="font-bold text-brand-navy block mb-1">Insurance</span>
-                  <span className="text-sm">Mandatory Zanzibar Inbound Travel Insurance.</span>
-                </div>
-                <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
-                  <span className="font-bold text-brand-navy block mb-1">Yellow Fever</span>
-                  <span className="text-sm">Certificate if traveling from an endemic country.</span>
-                </div>
-              </div>
+          {travelData?.ferry_info && (
+            <AccordionItem title="Ferry / Port Information">
+              <p className="whitespace-pre-wrap">{travelData.ferry_info}</p>
+            </AccordionItem>
+          )}
+
+          {!parsedAirportInfo && !travelData?.ferry_info && (
+            <div className="text-center py-12 text-brand-navy/40 italic">
+              Detailed travel information will be available soon.
             </div>
-          </AccordionItem>
-
-          <AccordionItem title="Travel Tips">
-            <ul className="space-y-4 list-disc pl-5">
-              <li><strong>Currency:</strong> Tanzanian Shilling (TZS) is the local currency, but USD is widely accepted in tourist areas.</li>
-              <li><strong>Connectivity:</strong> We recommend getting a local SIM card (Zantel or Airtel) at the airport for the best coverage.</li>
-              <li><strong>Weather:</strong> Zanzibar is tropical. Expect temperatures between 25°C and 30°C. Don't forget sunscreen!</li>
-              <li><strong>Water:</strong> Drink only bottled or filtered water. Avoid tap water even for brushing teeth.</li>
-              <li><strong>Power:</strong> Type G plugs (UK style) are standard. 230V, 50Hz.</li>
-            </ul>
-          </AccordionItem>
+          )}
         </div>
       </div>
 
