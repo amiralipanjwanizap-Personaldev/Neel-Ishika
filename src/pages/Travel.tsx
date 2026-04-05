@@ -1,35 +1,64 @@
+import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
-import { Plane, Hotel, Shield, Map, Info } from 'lucide-react';
+import { Plane, Shield, Map, Info, Ship } from 'lucide-react';
+import { getTravelInfo } from '../lib/api';
+
+interface TravelData {
+  visa_link: string;
+  insurance_link: string;
+  airport_info: string;
+  ferry_info: string;
+}
 
 export default function Travel() {
-  const travelInfo = [
+  const [travelData, setTravelData] = useState<TravelData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchData() {
+      const data = await getTravelInfo();
+      setTravelData(data);
+      setLoading(false);
+    }
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-[60vh] flex justify-center items-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-gold"></div>
+      </div>
+    );
+  }
+
+  const infoCards = [
     {
       icon: <Plane className="w-6 h-6 text-brand-gold" />,
       title: "Flights & Airport",
-      description: "Fly into Abeid Amani Karume International Airport (ZNZ). We recommend booking flights early as this is a popular destination.",
+      description: travelData?.airport_info || "Fly into Abeid Amani Karume International Airport (ZNZ). We recommend booking flights early.",
       link: "https://www.skyscanner.com",
       linkText: "Search Flights"
     },
     {
       icon: <Map className="w-6 h-6 text-brand-gold" />,
       title: "Visa Requirements",
-      description: "Most nationalities require a visa to enter Tanzania. You can apply for an e-Visa online before your trip.",
-      link: "https://visa.immigration.go.tz/",
+      description: "Most nationalities require a visa to enter Tanzania. You can apply for an e-Visa online.",
+      link: travelData?.visa_link || "https://visa.immigration.go.tz/",
       linkText: "Apply for e-Visa"
     },
     {
       icon: <Shield className="w-6 h-6 text-brand-gold" />,
       title: "Travel Insurance",
-      description: "Zanzibar now requires all visitors to have mandatory inbound travel insurance from the Zanzibar Insurance Corporation.",
-      link: "https://visitzanzibar.go.tz/",
+      description: "Zanzibar requires all visitors to have mandatory inbound travel insurance.",
+      link: travelData?.insurance_link || "https://visitzanzibar.go.tz/",
       linkText: "Get Insurance"
     },
     {
-      icon: <Hotel className="w-6 h-6 text-brand-gold" />,
-      title: "Accommodation",
-      description: "We have secured a block of rooms at the main wedding resort. Please use our discount code 'NEELISHIKA26' when booking.",
-      link: "#",
-      linkText: "Book Hotel"
+      icon: <Ship className="w-6 h-6 text-brand-gold" />,
+      title: "Ferry Information",
+      description: travelData?.ferry_info || "If you are coming from Dar es Salaam, you can take a fast ferry to Zanzibar.",
+      link: "https://www.azampay.com/ferry",
+      linkText: "Book Ferry"
     }
   ];
 
@@ -47,7 +76,7 @@ export default function Travel() {
       </motion.div>
 
       <div className="grid md:grid-cols-2 gap-8">
-        {travelInfo.map((info, index) => (
+        {infoCards.map((info, index) => (
           <motion.div
             key={index}
             initial={{ opacity: 0, y: 20 }}
@@ -67,7 +96,7 @@ export default function Travel() {
               rel="noopener noreferrer"
               className="inline-flex items-center text-sm uppercase tracking-widest text-brand-navy hover:text-brand-gold transition-colors font-medium"
             >
-              {info.linkText} â
+              {info.linkText} →
             </a>
           </motion.div>
         ))}

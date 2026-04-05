@@ -1,26 +1,35 @@
+import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
+import { getStory } from '../lib/api';
+
+interface Milestone {
+  id: string;
+  title: string;
+  content: string;
+  image_url: string;
+  order_index: number;
+}
 
 export default function Story() {
-  const milestones = [
-    {
-      year: "2018",
-      title: "How We Met",
-      description: "We first crossed paths at a mutual friend's Diwali party. A conversation about our shared love for travel sparked a connection that would change our lives.",
-      image: "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?q=80&w=800&auto=format&fit=crop"
-    },
-    {
-      year: "2020",
-      title: "Our First Trip",
-      description: "Our first international trip together to Bali. It was here we realized we made the perfect travel companions and partners in life.",
-      image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?q=80&w=800&auto=format&fit=crop"
-    },
-    {
-      year: "2024",
-      title: "The Proposal",
-      description: "A sunset walk on the beach turned into the most magical moment when Neel got down on one knee. It was an easy 'Yes!'.",
-      image: "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=800&auto=format&fit=crop"
+  const [milestones, setMilestones] = useState<Milestone[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchData() {
+      const data = await getStory();
+      setMilestones(data);
+      setLoading(false);
     }
-  ];
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-[60vh] flex justify-center items-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-gold"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-16">
@@ -35,37 +44,42 @@ export default function Story() {
         </p>
       </motion.div>
 
-      <div className="space-y-24">
-        {milestones.map((milestone, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className={`flex flex-col md:flex-row gap-8 items-center ${
-              index % 2 === 1 ? 'md:flex-row-reverse' : ''
-            }`}
-          >
-            <div className="w-full md:w-1/2">
-              <div className="aspect-[4/3] rounded-2xl overflow-hidden border border-brand-gold/20 shadow-lg">
-                <img
-                  src={milestone.image}
-                  alt={milestone.title}
-                  className="w-full h-full object-cover"
-                  referrerPolicy="no-referrer"
-                />
+      {milestones.length === 0 ? (
+        <div className="text-center text-brand-navy/50 py-20">
+          <p>Our story is being written...</p>
+        </div>
+      ) : (
+        <div className="space-y-24">
+          {milestones.map((milestone, index) => (
+            <motion.div
+              key={milestone.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className={`flex flex-col md:flex-row gap-8 items-center ${
+                index % 2 === 1 ? 'md:flex-row-reverse' : ''
+              }`}
+            >
+              <div className="w-full md:w-1/2">
+                <div className="aspect-[4/3] rounded-2xl overflow-hidden border border-brand-gold/20 shadow-lg">
+                  <img
+                    src={milestone.image_url || "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=800&auto=format&fit=crop"}
+                    alt={milestone.title}
+                    className="w-full h-full object-cover"
+                    referrerPolicy="no-referrer"
+                  />
+                </div>
               </div>
-            </div>
-            <div className={`w-full md:w-1/2 ${index % 2 === 1 ? 'md:text-right' : ''}`}>
-              <span className="text-brand-gold font-serif text-xl italic mb-2 block">{milestone.year}</span>
-              <h3 className="text-3xl font-serif text-brand-navy mb-4">{milestone.title}</h3>
-              <p className="text-brand-navy/70 leading-relaxed">
-                {milestone.description}
-              </p>
-            </div>
-          </motion.div>
-        ))}
-      </div>
+              <div className={`w-full md:w-1/2 ${index % 2 === 1 ? 'md:text-right' : ''}`}>
+                <h3 className="text-3xl font-serif text-brand-navy mb-4">{milestone.title}</h3>
+                <p className="text-brand-navy/70 leading-relaxed">
+                  {milestone.content}
+                </p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

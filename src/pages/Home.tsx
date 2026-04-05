@@ -1,7 +1,17 @@
 import { motion } from 'motion/react';
-import { Link } from 'react-router-dom';
+import { Link, useOutletContext } from 'react-router-dom';
+
+interface Settings {
+  logo_url?: string;
+  music_url?: string;
+  music_enabled?: boolean;
+  tagline?: string;
+  wedding_date?: string;
+}
 
 export default function Home() {
+  const { settings } = useOutletContext<{ settings: Settings | null }>();
+
   return (
     <div className="min-h-[calc(100vh-5rem)] flex flex-col items-center justify-center text-center px-4 relative overflow-hidden">
       {/* Background Image Placeholder */}
@@ -21,13 +31,13 @@ export default function Home() {
           transition={{ duration: 1 }}
         >
           <p className="text-brand-gold tracking-[0.2em] uppercase text-sm mb-6">
-            Together with their families
+            {settings?.wedding_date || "Zanzibar • 2026"}
           </p>
           <h1 className="text-6xl md:text-8xl font-serif text-brand-navy mb-8">
             Neel & Ishika
           </h1>
           <p className="text-lg md:text-xl text-brand-navy/80 mb-12 font-light max-w-xl mx-auto leading-relaxed">
-            Invite you to celebrate their wedding in the beautiful island of Zanzibar.
+            {settings?.tagline || "Invite you to celebrate their wedding in the beautiful island of Zanzibar."}
           </p>
           
           <Link 
