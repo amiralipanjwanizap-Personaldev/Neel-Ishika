@@ -3,6 +3,7 @@ import { Menu, X, Music, Music2, Lock } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { getSettings } from '../lib/api';
+import { supabase } from '../lib/supabase';
 
 const navLinks = [
   { name: 'Home', path: '/' },
@@ -21,6 +22,7 @@ interface Settings {
   wedding_date?: string;
   primary_color?: string;
   secondary_color?: string;
+  text_color?: string;
   homepage_template?: string;
   homepage_bg_url?: string;
   font_family?: string;
@@ -45,11 +47,25 @@ export default function Layout() {
     }
     fetchSettings();
 
+    // Subscribe to real-time updates for settings
+    const settingsChannel = supabase
+      .channel('settings-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'settings' },
+        (payload) => {
+          console.log('Settings changed:', payload);
+          setSettings(payload.new as Settings);
+        }
+      )
+      .subscribe();
+
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current = null;
       }
+      supabase.removeChannel(settingsChannel);
     };
   }, []);
 
@@ -70,6 +86,7 @@ export default function Layout() {
     <div className={`min-h-screen flex flex-col ${fontClass}`} style={{
       ['--brand-primary' as any]: settings?.primary_color || '#1F3A5F',
       ['--brand-secondary' as any]: settings?.secondary_color || '#C9A46C',
+      ['--brand-text' as any]: settings?.text_color || '#000000',
     }}>
       <header className="fixed w-full z-50 bg-brand-cream/90 backdrop-blur-sm border-b border-brand-gold/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
