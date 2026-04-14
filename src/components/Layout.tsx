@@ -17,6 +17,7 @@ const navLinks = [
   { name: 'RSVP', path: '/rsvp' },
   { name: 'Gallery', path: '/gallery' },
   { name: 'Story', path: '/story' },
+  { name: 'Challenge', path: '/games/photo-challenge' },
 ];
 
 interface Settings {
