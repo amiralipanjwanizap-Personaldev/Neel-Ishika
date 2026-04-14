@@ -12,6 +12,7 @@ import RSVP from './pages/RSVP';
 import Gallery from './pages/Gallery';
 import Story from './pages/Story';
 import PhotoChallenge from './pages/PhotoChallenge';
+import MessageWall from './pages/MessageWall';
 import DynamicPage from './pages/DynamicPage';
 import AdminLayout from './components/AdminLayout';
 import Login from './pages/admin/Login';
@@ -31,6 +32,7 @@ export default function App() {
           <Route path="gallery" element={<Gallery />} />
           <Route path="story" element={<Story />} />
           <Route path="games/photo-challenge" element={<PhotoChallenge />} />
+          <Route path="games/message-wall" element={<MessageWall />} />
           <Route path="page/:slug" element={<DynamicPage />} />
         </Route>
 
