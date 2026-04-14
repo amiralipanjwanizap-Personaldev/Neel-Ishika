@@ -25,6 +25,14 @@ export const Navbar1 = ({
   const bgColor = settings?.navbar_bg_color || "var(--brand-bg, #F5E9DA)";
   const textColor = settings?.navbar_text_color || "var(--brand-primary, #1F3A5F)";
 
+  const logoSizes: Record<string, string> = {
+    small: "h-10 md:h-12",
+    medium: "h-14 md:h-16",
+    large: "h-20 md:h-24"
+  };
+
+  const logoClass = logoSizes[settings?.logo_size || 'medium'] || logoSizes.medium;
+
   return (
     <header 
       className="fixed w-full z-50 border-b transition-all duration-300"
@@ -39,7 +47,7 @@ export const Navbar1 = ({
           {/* Logo Centered */}
           <Link to="/" className="font-serif text-3xl mb-4 flex items-center gap-3">
             {settings?.logo_url ? (
-              <img src={settings.logo_url} alt="Wedding Logo" className="h-14 w-auto object-contain" referrerPolicy="no-referrer" />
+              <img src={settings.logo_url} alt="Wedding Logo" className={`${logoClass} w-auto object-contain`} referrerPolicy="no-referrer" />
             ) : (
               "N & I"
             )}

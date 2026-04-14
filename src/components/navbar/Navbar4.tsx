@@ -15,6 +15,14 @@ export const Navbar4 = ({
   const bgColor = settings?.navbar_bg_color || "var(--brand-bg, #F5E9DA)";
   const textColor = settings?.navbar_text_color || "var(--brand-primary, #1F3A5F)";
 
+  const logoSizes: Record<string, string> = {
+    small: "h-10 md:h-12",
+    medium: "h-14 md:h-16",
+    large: "h-20 md:h-24"
+  };
+
+  const logoClass = logoSizes[settings?.logo_size || 'medium'] || logoSizes.medium;
+
   const midPoint = Math.ceil(navLinks.length / 2);
   const leftLinks = navLinks.slice(0, midPoint);
   const rightLinks = navLinks.slice(midPoint);
@@ -29,7 +37,7 @@ export const Navbar4 = ({
       }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
+        <div className="flex justify-between items-center py-4">
           {/* Left Links */}
           <nav className="hidden md:flex space-x-8 items-center flex-1">
             {leftLinks.map((link) => (
@@ -48,7 +56,7 @@ export const Navbar4 = ({
           {/* Logo Center */}
           <Link to="/" className="font-serif text-2xl flex items-center gap-3 px-8">
             {settings?.logo_url ? (
-              <img src={settings.logo_url} alt="Wedding Logo" className="h-12 w-auto object-contain" referrerPolicy="no-referrer" />
+              <img src={settings.logo_url} alt="Wedding Logo" className={`${logoClass} w-auto object-contain`} referrerPolicy="no-referrer" />
             ) : (
               "N & I"
             )}

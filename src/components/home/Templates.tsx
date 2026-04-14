@@ -6,10 +6,20 @@ interface TemplateProps {
   date: string;
   tagline: string;
   bgUrl?: string;
+  logoUrl?: string;
+  logoSize?: string;
 }
 
-export const ClassicTemplate = ({ names, date, tagline, bgUrl }: TemplateProps) => (
-  <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
+export const ClassicTemplate = ({ names, date, tagline, bgUrl, logoUrl, logoSize }: TemplateProps) => {
+  const logoSizes: Record<string, string> = {
+    small: "h-20 md:h-24 lg:h-28",
+    medium: "h-28 md:h-36 lg:h-44",
+    large: "h-40 md:h-52 lg:h-64"
+  };
+  const logoClass = logoSizes[logoSize || 'medium'] || logoSizes.medium;
+
+  return (
+    <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
     {bgUrl && (
       <div 
         className="absolute inset-0 bg-cover bg-center z-0"
@@ -23,9 +33,20 @@ export const ClassicTemplate = ({ names, date, tagline, bgUrl }: TemplateProps) 
       animate={{ opacity: 1, y: 0 }}
       className="relative z-10 text-center text-white px-4"
     >
-      <span className="inline-block px-4 py-1.5 bg-white/10 backdrop-blur-md text-white text-xs font-bold tracking-[0.3em] uppercase rounded-full mb-8 border border-white/20">
-        {tagline}
-      </span>
+      {logoUrl ? (
+        <motion.img 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          src={logoUrl} 
+          alt="Wedding Logo" 
+          className={`mx-auto ${logoClass} mb-8 object-contain drop-shadow-xl`}
+          referrerPolicy="no-referrer"
+        />
+      ) : (
+        <span className="inline-block px-4 py-1.5 bg-white/10 backdrop-blur-md text-white text-xs font-bold tracking-[0.3em] uppercase rounded-full mb-8 border border-white/20">
+          {tagline}
+        </span>
+      )}
       <h1 className="text-6xl md:text-8xl font-serif mb-8 leading-tight drop-shadow-2xl">
         {names}
       </h1>
@@ -33,18 +54,40 @@ export const ClassicTemplate = ({ names, date, tagline, bgUrl }: TemplateProps) 
       <p className="text-xl md:text-2xl font-serif tracking-widest opacity-90 italic">
         {date}
       </p>
+      {logoUrl && (
+        <p className="mt-8 text-sm tracking-[0.3em] uppercase opacity-60">
+          {tagline}
+        </p>
+      )}
     </motion.div>
   </div>
-);
+  );
+};
 
-export const ModernTemplate = ({ names, date, tagline, bgUrl }: TemplateProps) => (
-  <div className="relative min-h-screen flex flex-col md:flex-row bg-white overflow-hidden">
+export const ModernTemplate = ({ names, date, tagline, bgUrl, logoUrl, logoSize }: TemplateProps) => {
+  const logoSizes: Record<string, string> = {
+    small: "h-12 md:h-16",
+    medium: "h-16 md:h-24",
+    large: "h-24 md:h-32"
+  };
+  const logoClass = logoSizes[logoSize || 'medium'] || logoSizes.medium;
+
+  return (
+    <div className="relative min-h-screen flex flex-col md:flex-row bg-white overflow-hidden">
     <div className="w-full md:w-1/2 flex flex-col justify-center p-12 md:p-24 order-2 md:order-1">
       <motion.div
         initial={{ opacity: 0, x: -50 }}
         animate={{ opacity: 1, x: 0 }}
         className="space-y-8"
       >
+        {logoUrl && (
+          <img 
+            src={logoUrl} 
+            alt="Logo" 
+            className={`${logoClass} w-auto object-contain mb-4`}
+            referrerPolicy="no-referrer"
+          />
+        )}
         <p 
           className="font-bold tracking-[0.2em] uppercase text-sm"
           style={{ color: "var(--brand-secondary)" }}
@@ -86,13 +129,22 @@ export const ModernTemplate = ({ names, date, tagline, bgUrl }: TemplateProps) =
       <div className="absolute inset-0 bg-brand-navy/10" />
     </div>
   </div>
-);
+  );
+};
 
-export const LuxuryTemplate = ({ names, date, tagline, bgUrl }: TemplateProps) => (
-  <div 
-    className="relative min-h-screen flex items-center justify-center overflow-hidden"
-    style={{ backgroundColor: "var(--brand-primary)" }}
-  >
+export const LuxuryTemplate = ({ names, date, tagline, bgUrl, logoUrl, logoSize }: TemplateProps) => {
+  const logoSizes: Record<string, string> = {
+    small: "h-20 md:h-24 lg:h-28",
+    medium: "h-28 md:h-36 lg:h-44",
+    large: "h-40 md:h-52 lg:h-64"
+  };
+  const logoClass = logoSizes[logoSize || 'medium'] || logoSizes.medium;
+
+  return (
+    <div 
+      className="relative min-h-screen flex items-center justify-center overflow-hidden"
+      style={{ backgroundColor: "var(--brand-primary)" }}
+    >
     {bgUrl && (
       <motion.div 
         initial={{ scale: 1.1 }}
@@ -121,14 +173,23 @@ export const LuxuryTemplate = ({ names, date, tagline, bgUrl }: TemplateProps) =
         transition={{ delay: 0.5, duration: 1 }}
         className="mb-12"
       >
-        <div 
-          className="w-20 h-20 border-2 rounded-full mx-auto flex items-center justify-center mb-6"
-          style={{ borderColor: "var(--brand-secondary)" }}
-        >
-          <span className="text-3xl font-serif" style={{ color: "var(--brand-secondary)" }}>
-            {names.split('&').map(n => n.trim()[0]).join('')}
-          </span>
-        </div>
+        {logoUrl ? (
+          <img 
+            src={logoUrl} 
+            alt="Wedding Logo" 
+            className={`mx-auto ${logoClass} mb-6 object-contain drop-shadow-2xl`}
+            referrerPolicy="no-referrer"
+          />
+        ) : (
+          <div 
+            className="w-20 h-20 border-2 rounded-full mx-auto flex items-center justify-center mb-6"
+            style={{ borderColor: "var(--brand-secondary)" }}
+          >
+            <span className="text-3xl font-serif" style={{ color: "var(--brand-secondary)" }}>
+              {names.split('&').map(n => n.trim()[0]).join('')}
+            </span>
+          </div>
+        )}
         <div 
           className="h-px w-32 mx-auto"
           style={{ background: "linear-gradient(to right, transparent, var(--brand-secondary), transparent)" }}
@@ -156,4 +217,5 @@ export const LuxuryTemplate = ({ names, date, tagline, bgUrl }: TemplateProps) =
       </motion.p>
     </motion.div>
   </div>
-);
+  );
+};

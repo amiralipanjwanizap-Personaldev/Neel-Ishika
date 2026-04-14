@@ -34,6 +34,14 @@ export const Navbar3 = ({
     ? "rgba(var(--brand-secondary-rgb, 201, 164, 108), 0.2)" 
     : "transparent";
 
+  const logoSizes: Record<string, string> = {
+    small: "h-10 md:h-12",
+    medium: "h-14 md:h-16",
+    large: "h-20 md:h-24"
+  };
+
+  const logoClass = logoSizes[settings?.logo_size || 'medium'] || logoSizes.medium;
+
   return (
     <header 
       className={`fixed w-full z-50 transition-all duration-500 ${isScrolled ? 'border-b shadow-sm' : ''}`}
@@ -45,10 +53,10 @@ export const Navbar3 = ({
       }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
+        <div className="flex justify-between items-center py-4">
           <Link to="/" className="font-serif text-2xl flex items-center gap-3">
             {settings?.logo_url ? (
-              <img src={settings.logo_url} alt="Wedding Logo" className="h-12 w-auto object-contain" referrerPolicy="no-referrer" />
+              <img src={settings.logo_url} alt="Wedding Logo" className={`${logoClass} w-auto object-contain`} referrerPolicy="no-referrer" />
             ) : (
               "N & I"
             )}

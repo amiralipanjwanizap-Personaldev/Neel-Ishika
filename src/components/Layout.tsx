@@ -34,6 +34,7 @@ interface Settings {
   navbar_template?: string;
   navbar_bg_color?: string;
   navbar_text_color?: string;
+  logo_size?: string;
 }
 
 const navbars: Record<string, any> = {

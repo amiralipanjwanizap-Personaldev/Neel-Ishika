@@ -1,7 +1,7 @@
 import { useEffect, useState, FormEvent } from 'react';
 import { motion } from 'motion/react';
 import { supabase } from '../../lib/supabase';
-import { Users, CheckCircle, XCircle, UserPlus, Calendar, Image as ImageIcon, BookOpen, Plane, Settings, Plus, Edit2, Trash2, MapPin, Clock, Shirt, Info, Save, X } from 'lucide-react';
+import { Users, CheckCircle, XCircle, UserPlus, Calendar, Image as ImageIcon, BookOpen, Plane, Settings, Plus, Edit2, Trash2, MapPin, Clock, Shirt, Info, Save, X, Upload } from 'lucide-react';
 
 interface RSVP {
   id: string;
@@ -62,6 +62,7 @@ interface Settings {
   navbar_template: string;
   navbar_bg_color: string;
   navbar_text_color: string;
+  logo_size: string;
 }
 
 interface Page {
@@ -140,8 +141,43 @@ export default function Dashboard() {
     font_family: 'font-sans',
     navbar_template: 'navbar1',
     navbar_bg_color: '',
-    navbar_text_color: ''
+    navbar_text_color: '',
+    logo_size: 'medium'
   });
+
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+
+  async function handleLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setUploadingLogo(true);
+      const fileExt = file.name.split('.').pop();
+      const fileName = `logo_${Date.now()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      // 1. Upload to Storage (bucket: branding)
+      const { error: uploadError } = await supabase.storage
+        .from('branding')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      // 2. Get Public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('branding')
+        .getPublicUrl(filePath);
+
+      // 3. Update Form State
+      setSettingsForm({ ...settingsForm, logo_url: publicUrl });
+    } catch (error) {
+      console.error('Error uploading logo:', error);
+      alert('Error uploading logo. Make sure the "branding" bucket exists in Supabase Storage and is public.');
+    } finally {
+      setUploadingLogo(false);
+    }
+  }
 
   useEffect(() => {
     fetchRSVPs();
@@ -301,7 +337,8 @@ export default function Dashboard() {
           font_family: data.font_family || 'font-sans',
           navbar_template: data.navbar_template || 'navbar1',
           navbar_bg_color: data.navbar_bg_color || '',
-          navbar_text_color: data.navbar_text_color || ''
+          navbar_text_color: data.navbar_text_color || '',
+          logo_size: data.logo_size || 'medium'
         });
       }
     } catch (error) {
@@ -1309,9 +1346,56 @@ export default function Dashboard() {
             {/* Branding Section */}
             <div className="space-y-4">
               <h3 className="text-lg font-serif text-brand-navy border-b pb-2">Branding & Content</h3>
+              
+              {/* Logo Upload Section */}
+              <div className="bg-gray-50 p-6 rounded-xl border border-dashed border-gray-300 space-y-4">
+                <label className="text-sm font-medium text-gray-700 block">Wedding Logo</label>
+                <div className="flex flex-col md:flex-row items-center gap-6">
+                  <div className="w-32 h-32 bg-white rounded-lg border border-gray-200 flex items-center justify-center overflow-hidden shadow-inner">
+                    {settingsForm.logo_url ? (
+                      <img 
+                        src={settingsForm.logo_url} 
+                        alt="Logo Preview" 
+                        className="max-w-full max-h-full object-contain"
+                        referrerPolicy="no-referrer"
+                      />
+                    ) : (
+                      <div className="text-gray-300 text-xs text-center px-2">No Logo Uploaded</div>
+                    )}
+                  </div>
+                  <div className="flex-1 space-y-3">
+                    <div className="flex items-center gap-3">
+                      <label className="cursor-pointer bg-white px-4 py-2 rounded-lg border border-gray-200 text-sm font-medium hover:bg-gray-50 transition-colors flex items-center gap-2">
+                        <Upload size={16} />
+                        {uploadingLogo ? 'Uploading...' : 'Upload New Logo'}
+                        <input 
+                          type="file" 
+                          className="hidden" 
+                          accept="image/*"
+                          onChange={handleLogoUpload}
+                          disabled={uploadingLogo}
+                        />
+                      </label>
+                      {settingsForm.logo_url && (
+                        <button
+                          type="button"
+                          onClick={() => setSettingsForm({ ...settingsForm, logo_url: '' })}
+                          className="text-red-500 text-sm hover:underline"
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-500">
+                      Recommended: Transparent PNG, max 500KB. This logo will replace initials on the homepage and appear in the navbar.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Logo URL</label>
+                  <label className="text-sm font-medium text-gray-700">Logo URL (Direct Link)</label>
                   <input
                     type="url"
                     value={settingsForm.logo_url}
@@ -1319,6 +1403,18 @@ export default function Dashboard() {
                     className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-brand-gold outline-none"
                     placeholder="https://..."
                   />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Logo Size</label>
+                  <select
+                    value={settingsForm.logo_size}
+                    onChange={(e) => setSettingsForm({ ...settingsForm, logo_size: e.target.value })}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-brand-gold outline-none"
+                  >
+                    <option value="small">Small</option>
+                    <option value="medium">Medium</option>
+                    <option value="large">Large</option>
+                  </select>
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700">Wedding Date Text</label>
