@@ -10,6 +10,8 @@ interface GalleryItem {
   file_url: string;
   type: 'image' | 'video';
   created_at: string;
+  challenge_name?: string;
+  uploaded_by?: string;
 }
 
 export default function Gallery() {

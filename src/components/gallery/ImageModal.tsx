@@ -7,6 +7,8 @@ interface GalleryItem {
   file_url: string;
   type: 'image' | 'video';
   created_at: string;
+  challenge_name?: string;
+  uploaded_by?: string;
 }
 
 interface ImageModalProps {
@@ -93,6 +95,11 @@ export default function ImageModal({ item, onClose, onNext, onPrev }: ImageModal
               >
                 <Download size={20} />
               </a>
+              {item.uploaded_by && (
+                <div className="px-4 py-2 bg-white/10 text-white rounded-full backdrop-blur-md text-sm font-medium">
+                  Uploaded by {item.uploaded_by}
+                </div>
+              )}
             </div>
             <button
               onClick={onClose}

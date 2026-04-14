@@ -15,6 +15,7 @@ interface FilePreview {
 
 export default function UploadSection({ onUploadComplete }: UploadSectionProps) {
   const [selectedFiles, setSelectedFiles] = useState<FilePreview[]>([]);
+  const [uploaderName, setUploaderName] = useState('');
   const [uploading, setUploading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -44,11 +45,14 @@ export default function UploadSection({ onUploadComplete }: UploadSectionProps) 
 
   const handleUpload = async () => {
     if (selectedFiles.length === 0) return;
+    if (!uploaderName.trim()) {
+      setUploadStatus({ type: 'error', message: 'Please enter your name before uploading.' });
+      return;
+    }
 
     setUploading(true);
     setUploadStatus(null);
     let successCount = 0;
-    let errorCount = 0;
 
     try {
       const uploadPromises = selectedFiles.map(async ({ file, type }) => {
@@ -57,7 +61,7 @@ export default function UploadSection({ onUploadComplete }: UploadSectionProps) 
         const filePath = `${fileName}`;
 
         // 1. Upload to Storage
-        const { data: storageData, error: storageError } = await supabase.storage
+        const { error: storageError } = await supabase.storage
           .from('gallery')
           .upload(filePath, file);
 
@@ -74,7 +78,8 @@ export default function UploadSection({ onUploadComplete }: UploadSectionProps) 
           .insert([
             {
               file_url: publicUrl,
-              type: type
+              type: type,
+              uploaded_by: uploaderName.trim()
             }
           ]);
 
@@ -117,6 +122,20 @@ export default function UploadSection({ onUploadComplete }: UploadSectionProps) 
       </div>
 
       <div className="space-y-6">
+        {/* User Name Input */}
+        <div className="max-w-sm mx-auto w-full">
+          <label className="block text-xs font-bold text-brand-navy/40 uppercase tracking-widest mb-2 ml-1">
+            Your Name
+          </label>
+          <input
+            type="text"
+            value={uploaderName}
+            onChange={(e) => setUploaderName(e.target.value)}
+            placeholder="Enter your name"
+            className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-brand-navy/10 focus:bg-white focus:ring-2 focus:ring-brand-gold/20 focus:border-brand-gold outline-none transition-all text-sm"
+          />
+        </div>
+
         {/* File Input Area */}
         <div 
           onClick={() => fileInputRef.current?.click()}
