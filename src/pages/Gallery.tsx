@@ -5,6 +5,8 @@ import UploadSection from '../components/gallery/UploadSection';
 import GalleryGrid from '../components/gallery/GalleryGrid';
 import ImageModal from '../components/gallery/ImageModal';
 
+export const dynamic = "force-dynamic";
+
 interface GalleryItem {
   id: string;
   file_url: string;

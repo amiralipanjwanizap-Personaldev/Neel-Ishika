@@ -4,6 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Neel & Ishika Wedding</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#1F3A5F" />
     <link rel="apple-touch-icon" href="https://placehold.co/192x192/1F3A5F/F5E9DA?text=N%26I" />
@@ -13,12 +16,11 @@
     <script type="module" src="/src/main.tsx"></script>
     <script>
       if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js').then(registration => {
-            console.log('SW registered: ', registration);
-          }).catch(registrationError => {
-            console.log('SW registration failed: ', registrationError);
-          });
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+          for(let registration of registrations) {
+            registration.unregister();
+            console.log('SW unregistered: ', registration);
+          }
         });
       }
     </script>

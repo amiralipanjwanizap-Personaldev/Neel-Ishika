@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { MessageSquare, Send, Trash2, User, Clock, Loader2, Heart, Reply as ReplyIcon } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
+export const dynamic = "force-dynamic";
+
 interface Reply {
   id: string;
   message_id: string;

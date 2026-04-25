@@ -1,6 +1,8 @@
 import { useOutletContext } from 'react-router-dom';
 import { ClassicTemplate, ModernTemplate, LuxuryTemplate } from '../components/home/Templates';
 
+export const dynamic = "force-dynamic";
+
 interface Settings {
   logo_url?: string;
   music_url?: string;

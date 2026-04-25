@@ -4,6 +4,8 @@ import { Camera, Upload, CheckCircle2, Loader2, Image as ImageIcon, Film, Trophy
 import { supabase } from '../lib/supabase';
 import { getGallery } from '../lib/api';
 
+export const dynamic = "force-dynamic";
+
 interface Challenge {
   id: string;
   title: string;
