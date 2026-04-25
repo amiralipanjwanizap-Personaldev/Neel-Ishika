@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { format } from 'date-fns';
-import { MapPin, Calendar, Clock, Shirt, Info } from 'lucide-react';
+import { MapPin, Calendar, Clock, Shirt, Info, Map as MapIcon, Maximize2, X } from 'lucide-react';
 import { getEvents } from '../lib/api';
+import { supabase } from '../lib/supabase';
 
 interface Event {
   id: string;
@@ -10,20 +11,30 @@ interface Event {
   date: string;
   time: string;
   venue: string;
-  map_link: string;
+  map_link?: string;
   description?: string;
   dress_code?: string;
+  location_label?: string;
+  location_number?: string;
 }
 
 export default function Schedule() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
+  const [mapUrl, setMapUrl] = useState<string>('');
+  const [expandedMap, setExpandedMap] = useState<boolean>(false);
 
   useEffect(() => {
     async function fetchEvents() {
       const data = await getEvents();
       setEvents(data);
       setLoading(false);
+    }
+    
+    // Get map storage URL from supabase storage
+    const { data } = supabase.storage.from('branding').getPublicUrl('seacliff-map.jpg');
+    if (data?.publicUrl) {
+      setMapUrl(data.publicUrl);
     }
 
     fetchEvents();
@@ -75,10 +86,6 @@ export default function Schedule() {
                     <Clock size={14} className="text-brand-gold" />
                     <span>{event.time}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <MapPin size={14} className="text-brand-gold" />
-                    <span>{event.venue}</span>
-                  </div>
                   {event.dress_code && (
                     <div className="flex items-center gap-2">
                       <Shirt size={14} className="text-brand-gold" />
@@ -94,12 +101,51 @@ export default function Schedule() {
                   </div>
                 )}
 
-                {event.map_link && (
+                {/* Map Implementation */}
+                {event.location_number && event.location_label ? (
+                  <div className="mt-6 border-t border-brand-gold/10 pt-4">
+                    <div className="flex items-center gap-2 text-sm text-brand-navy font-medium mb-3 relative -left-[1px]">
+                      <MapPin size={16} className="text-brand-gold shrink-0" />
+                      <span>📍 Location: {event.location_label} (Map No. {event.location_number})</span>
+                    </div>
+                    
+                    {mapUrl && (
+                      <div 
+                        className="relative group rounded-xl overflow-hidden shadow-sm bg-gray-50 border border-brand-gold/10 cursor-pointer" 
+                        onClick={() => setExpandedMap(true)}
+                      >
+                        <img 
+                          src={mapUrl} 
+                          alt="Sea Cliff Resort Map" 
+                          loading="lazy" 
+                          className="w-full h-32 md:h-40 object-cover"
+                        />
+                        <div className="absolute inset-0 bg-brand-navy/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="bg-white/95 backdrop-blur text-brand-navy px-4 py-2 rounded-full text-xs font-semibold flex items-center gap-2 shadow-lg">
+                            <Maximize2 size={14} className="text-brand-gold" /> Tap to Expand Map
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    <p className="text-xs text-brand-navy/60 mt-3 flex items-start gap-1.5 font-medium">
+                      <MapIcon size={14} className="text-brand-gold shrink-0 mt-0.5" />
+                      Find number {event.location_number} on the map to reach your event.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="mt-6 border-t border-brand-gold/10 pt-4 text-sm text-brand-navy/60 flex items-center gap-2">
+                    <MapPin size={14} className="text-brand-gold opacity-60" />
+                    <i>Location details will be updated soon</i>
+                  </div>
+                )}
+                
+                {event.map_link && !event.location_number && (
                   <a
                     href={event.map_link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-block text-xs uppercase tracking-widest text-brand-gold hover:text-brand-navy transition-colors font-medium"
+                    className="inline-block mt-4 text-xs uppercase tracking-widest text-brand-gold hover:text-brand-navy transition-colors font-medium border border-brand-gold/20 px-4 py-2 rounded-lg hover:bg-brand-gold/5"
                   >
                     View on Map →
                   </a>
@@ -109,6 +155,49 @@ export default function Schedule() {
           ))}
         </div>
       )}
+
+      {/* Expanded Map Modal */}
+      <AnimatePresence>
+        {expandedMap && mapUrl && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setExpandedMap(false)}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-brand-navy/95 backdrop-blur-md p-2 md:p-8"
+          >
+            <button
+              onClick={() => setExpandedMap(false)}
+              className="absolute top-4 right-4 md:top-8 md:right-8 p-3 text-white/70 hover:text-white bg-black/20 hover:bg-black/40 rounded-full transition-colors z-50 hover:scale-105 active:scale-95"
+            >
+              <X size={24} />
+            </button>
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ type: "spring", bounce: 0, duration: 0.4 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-full h-[90vh] max-w-6xl bg-black/50 rounded-2xl overflow-hidden flex flex-col shadow-2xl border border-white/10"
+            >
+              {/* Very simple scrollable map container */}
+              <div className="w-full h-full overflow-auto flex items-center justify-center p-4">
+                <img 
+                  src={mapUrl} 
+                  alt="Sea Cliff Resort Map Full" 
+                  className="min-w-[150%] md:min-w-full lg:max-w-none h-auto object-contain shadow-2xl rounded-lg"
+                />
+              </div>
+              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 pointer-events-none">
+                <div className="bg-black/60 backdrop-blur-md text-white/90 text-sm px-6 py-2 rounded-full border border-white/10 flex items-center gap-2 shadow-2xl">
+                  <Maximize2 size={16} className="text-brand-gold" />
+                  <span>Pinch or scroll to navigate</span>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

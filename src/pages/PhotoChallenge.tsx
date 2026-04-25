@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Camera, Upload, CheckCircle2, Loader2, Image as ImageIcon, Film, Trophy, Flame, User } from 'lucide-react';
+import { Camera, Upload, CheckCircle2, Loader2, Image as ImageIcon, Film, Trophy, Flame, User, Heart } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { getGallery } from '../lib/api';
 
@@ -17,6 +17,7 @@ interface GalleryItem {
   created_at: string;
   challenge_name?: string;
   uploaded_by?: string;
+  votes?: number;
 }
 
 const CHALLENGES: Challenge[] = [
@@ -36,6 +37,8 @@ export default function PhotoChallenge() {
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [votedImages, setVotedImages] = useState<string[]>([]);
+  const [votingId, setVotingId] = useState<string | null>(null);
 
   const fetchGallery = useCallback(async () => {
     const data = await getGallery();
@@ -45,7 +48,45 @@ export default function PhotoChallenge() {
 
   useEffect(() => {
     fetchGallery();
+    const storedVotes = localStorage.getItem('votedImages');
+    if (storedVotes) {
+      setVotedImages(JSON.parse(storedVotes));
+    }
   }, [fetchGallery]);
+
+  const handleVote = async (imageId: string, currentVotes: number = 0) => {
+    if (votedImages.includes(imageId) || votingId) return;
+    setVotingId(imageId);
+    
+    // Optimistic UI update
+    setGalleryItems(prev => prev.map(item => 
+      item.id === imageId ? { ...item, votes: currentVotes + 1 } : item
+    ));
+
+    try {
+      const newVotes = currentVotes + 1;
+      const { error } = await supabase
+        .from('gallery')
+        .update({ votes: newVotes })
+        .eq('id', imageId);
+
+      if (error) {
+        throw error;
+      }
+
+      const newVotedList = [...votedImages, imageId];
+      setVotedImages(newVotedList);
+      localStorage.setItem('votedImages', JSON.stringify(newVotedList));
+    } catch (err) {
+      console.error('Error voting:', err);
+      // Revert optimistic update
+      setGalleryItems(prev => prev.map(item => 
+        item.id === imageId ? { ...item, votes: currentVotes } : item
+      ));
+    } finally {
+      setVotingId(null);
+    }
+  };
 
   const getChallengeStats = () => {
     const stats: Record<string, number> = {};
@@ -67,7 +108,22 @@ export default function PhotoChallenge() {
     return { stats, popularChallenge };
   };
 
+  const getLeaderboardStats = () => {
+    const counts: Record<string, number> = {};
+    galleryItems.forEach(item => {
+      const name = item.uploaded_by?.trim();
+      if (name) {
+        counts[name] = (counts[name] || 0) + 1;
+      }
+    });
+
+    return Object.entries(counts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3);
+  };
+
   const { stats, popularChallenge } = getChallengeStats();
+  const topContributors = getLeaderboardStats();
 
   async function handleUpload(challengeId: string, challengeTitle: string, e: React.ChangeEvent<HTMLInputElement>) {
     const files = e.target.files;
@@ -172,6 +228,40 @@ export default function PhotoChallenge() {
           )}
         </AnimatePresence>
 
+        {/* Top Contributors */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-8"
+        >
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 bg-brand-gold/10 rounded-lg">
+              <Trophy className="text-brand-gold w-5 h-5" />
+            </div>
+            <h2 className="font-serif text-xl text-brand-navy">Top Contributors</h2>
+          </div>
+          {topContributors.length > 0 ? (
+            <div className="flex flex-col gap-3">
+              {topContributors.map(([name, count], index) => (
+                <div key={name} className="flex items-center justify-between p-3 rounded-lg bg-gray-50 border border-gray-100">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">
+                      {index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉'}
+                    </span>
+                    <span className="font-medium text-brand-navy text-sm sm:text-base">{name}</span>
+                  </div>
+                  <span className="text-sm font-bold text-brand-gold bg-brand-gold/10 px-3 py-1 rounded-full">
+                    {count} {count === 1 ? 'photo' : 'photos'}
+                  </span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-gray-500 text-center py-4">No photos uploaded yet. Be the first!</p>
+          )}
+        </motion.div>
+
         {/* User Name Input */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -199,6 +289,9 @@ export default function PhotoChallenge() {
             const challengeImages = galleryItems.filter(item => item.challenge_name === challenge.title);
             const isPopular = popularChallenge === challenge.title && stats[challenge.title] > 0;
             const uploadCount = stats[challenge.title] || 0;
+            
+            const maxVotes = Math.max(0, ...challengeImages.map(img => img.votes || 0));
+            const popularImageId = maxVotes > 0 ? challengeImages.find(img => img.votes === maxVotes)?.id : null;
 
             return (
               <motion.div
@@ -260,26 +353,60 @@ export default function PhotoChallenge() {
                 {/* Challenge Gallery */}
                 {challengeImages.length > 0 && (
                   <div className="px-6 pb-6">
-                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-                      {challengeImages.map((item) => (
-                        <div key={item.id} className="group relative aspect-square rounded-xl overflow-hidden bg-gray-100">
-                          {item.type === 'video' ? (
-                            <video src={item.file_url} className="w-full h-full object-cover" />
-                          ) : (
-                            <img 
-                              src={item.file_url} 
-                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
-                              loading="lazy"
-                              referrerPolicy="no-referrer"
-                            />
-                          )}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-2">
-                            <p className="text-[10px] text-white font-medium truncate">
-                              By {item.uploaded_by}
-                            </p>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                      {challengeImages.map((item) => {
+                        const isMostLoved = item.id === popularImageId && (item.votes || 0) > 0;
+                        const hasVoted = votedImages.includes(item.id);
+                        
+                        return (
+                          <div key={item.id} className="group relative rounded-xl overflow-hidden bg-gray-100 flex flex-col shadow-sm border border-gray-100">
+                            <div className="relative aspect-square">
+                              {item.type === 'video' ? (
+                                <video src={item.file_url} className="w-full h-full object-cover" />
+                              ) : (
+                                <img 
+                                  src={item.file_url} 
+                                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                                  loading="lazy"
+                                  referrerPolicy="no-referrer"
+                                />
+                              )}
+                              {isMostLoved && (
+                                <div className="absolute top-2 left-2 z-10">
+                                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-500 text-white shadow-md">
+                                    <Trophy size={12} className="text-white" />
+                                    Most Loved
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                            
+                            <div className="bg-white p-3 border-t border-gray-100 flex items-center justify-between">
+                              <p className="text-xs text-gray-500 font-medium truncate max-w-[50%]">
+                                By {item.uploaded_by || 'Guest'}
+                              </p>
+                              
+                              <motion.button
+                                whileHover={{ scale: hasVoted ? 1 : 1.05 }}
+                                whileTap={{ scale: hasVoted ? 1 : 0.95 }}
+                                onClick={() => handleVote(item.id, item.votes)}
+                                disabled={hasVoted || votingId === item.id}
+                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-colors ${
+                                  hasVoted 
+                                    ? 'bg-rose-50 text-rose-500 border border-rose-100' 
+                                    : 'bg-white text-gray-500 border border-gray-200 hover:bg-rose-50 hover:text-rose-500 hover:border-rose-200'
+                                }`}
+                              >
+                                <Heart 
+                                  size={14} 
+                                  className={hasVoted ? 'fill-rose-500 text-rose-500' : 'text-gray-400 group-hover:text-rose-500 transition-colors'} 
+                                />
+                                <span>{item.votes || 0}</span>
+                              </motion.button>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
                 )}
