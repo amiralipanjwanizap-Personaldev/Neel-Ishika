@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { Menu, X, Music, Music2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -45,7 +45,7 @@ export const Navbar1 = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center py-4">
           {/* Logo Centered */}
-          <Link to="/" className="font-serif text-3xl mb-4 flex items-center gap-3">
+          <Link href="/" className="font-serif text-3xl mb-4 flex items-center gap-3">
             {settings?.logo_url ? (
               <img src={settings.logo_url} alt="Wedding Logo" className={`${logoClass} w-auto object-contain`} referrerPolicy="no-referrer" />
             ) : (
@@ -58,7 +58,7 @@ export const Navbar1 = ({
             {navLinks.map((link) => (
               <Link
                 key={link.name}
-                to={link.path}
+                href={link.path}
                 className={`text-xs tracking-[0.2em] uppercase transition-all hover:opacity-70 ${
                   location.pathname === link.path ? 'font-bold border-b border-current' : ''
                 }`}

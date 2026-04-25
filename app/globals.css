@@ -1,0 +1,43 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --color-brand-cream: var(--brand-bg, #F5E9DA);
+  --color-brand-navy: var(--brand-primary, #1F3A5F);
+  --color-brand-gold: var(--brand-secondary, #C9A46C);
+  --color-brand-text: var(--brand-text, #000000);
+  
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-playfair), ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, SFMono-Regular, monospace;
+}
+
+body {
+  background-color: var(--brand-bg, #F5E9DA);
+  color: var(--brand-text, #000000);
+  font-family: var(--font-sans);
+}
+
+.primary-bg {
+  background-color: var(--brand-primary);
+}
+
+.secondary-bg {
+  background-color: var(--brand-secondary);
+}
+
+.text-theme {
+  color: var(--brand-text);
+}
+
+.primary-text {
+  color: var(--brand-primary);
+}
+
+.secondary-text {
+  color: var(--brand-secondary);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif);
+}
