@@ -23,6 +23,8 @@ interface Event {
   dress_code: string;
   location_label?: string;
   location_number?: string;
+  map_x?: number;
+  map_y?: number;
 }
 
 interface GalleryItem {
@@ -87,6 +89,8 @@ export default function Dashboard() {
   const [settings, setSettings] = useState<Settings | null>(null);
   const [pages, setPages] = useState<Page[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const mapUrl = supabase.storage.from('branding').getPublicUrl('seacliff-map.jpg').data.publicUrl;
   
   // Page Form State
   const [isPageModalOpen, setIsPageModalOpen] = useState(false);
@@ -107,7 +111,9 @@ export default function Dashboard() {
     description: '',
     dress_code: '',
     location_label: '',
-    location_number: ''
+    location_number: '',
+    map_x: undefined as number | undefined,
+    map_y: undefined as number | undefined
   });
 
   // Story Form State
@@ -488,6 +494,11 @@ export default function Dashboard() {
 
   async function handleSaveEvent(e: FormEvent) {
     e.preventDefault();
+    if (eventForm.map_x === undefined || eventForm.map_y === undefined) {
+      alert("Please click on the map below to specify the event location.");
+      return;
+    }
+    
     try {
       if (editingEvent) {
         const { error } = await supabase
@@ -503,7 +514,7 @@ export default function Dashboard() {
       }
       setIsEventModalOpen(false);
       setEditingEvent(null);
-      setEventForm({ title: '', date: '', time: '', venue: '', map_link: '', description: '', dress_code: '', location_label: '', location_number: '' });
+      setEventForm({ title: '', date: '', time: '', venue: '', map_link: '', description: '', dress_code: '', location_label: '', location_number: '', map_x: undefined, map_y: undefined });
       fetchEvents();
     } catch (error) {
       alert('Error saving event');
@@ -533,7 +544,9 @@ export default function Dashboard() {
       description: event.description || '',
       dress_code: event.dress_code || '',
       location_label: event.location_label || '',
-      location_number: event.location_number || ''
+      location_number: event.location_number || '',
+      map_x: event.map_x,
+      map_y: event.map_y
     });
     setIsEventModalOpen(true);
   };
@@ -689,7 +702,7 @@ export default function Dashboard() {
             <button
               onClick={() => {
                 setEditingEvent(null);
-                setEventForm({ title: '', date: '', time: '', venue: '', map_link: '', description: '', dress_code: '', location_label: '', location_number: '' });
+                setEventForm({ title: '', date: '', time: '', venue: '', map_link: '', description: '', dress_code: '', location_label: '', location_number: '', map_x: undefined, map_y: undefined });
                 setIsEventModalOpen(true);
               }}
               className="flex items-center gap-2 bg-brand-navy text-white px-4 py-2 rounded-lg hover:bg-brand-gold transition-colors"
@@ -856,6 +869,34 @@ export default function Dashboard() {
                       />
                     </div>
                   </div>
+                  
+                  {/* Map Location Picker */}
+                  <div className="space-y-2 pt-2">
+                    <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Event Location Pin <span className="text-red-500">*</span>
+                    </label>
+                    <p className="text-xs text-gray-400 mb-2">Click on the map to set the location pin for this event.</p>
+                    <div 
+                      className="relative w-full cursor-crosshair rounded-xl overflow-hidden border border-gray-200"
+                      onClick={(e) => {
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        const x = ((e.clientX - rect.left) / rect.width) * 100;
+                        const y = ((e.clientY - rect.top) / rect.height) * 100;
+                        setEventForm({ ...eventForm, map_x: x, map_y: y });
+                      }}
+                    >
+                      <img src={mapUrl} alt="Resort Map" className="w-full h-auto block" />
+                      {eventForm.map_x !== undefined && eventForm.map_y !== undefined && (
+                        <div 
+                          className="absolute w-5 h-5 bg-brand-gold rounded-full shadow-[0_0_10px_rgba(212,175,55,0.7)] border-2 border-white transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-[10px] text-white font-bold"
+                          style={{ left: `${eventForm.map_x}%`, top: `${eventForm.map_y}%` }}
+                        >
+                          {eventForm.location_number || '📍'}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
                   <div className="space-y-1">
                     <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Description</label>
                     <textarea

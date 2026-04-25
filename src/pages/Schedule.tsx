@@ -16,13 +16,9 @@ interface Event {
   dress_code?: string;
   location_label?: string;
   location_number?: string;
+  map_x?: number;
+  map_y?: number;
 }
-
-const MARKER_POSITIONS: Record<string, {x: number, y: number}> = {
-  "31": { x: 65, y: 40 },
-  "8": { x: 30, y: 60 },
-  "15": { x: 50, y: 75 }
-};
 
 export default function Schedule() {
   const [events, setEvents] = useState<Event[]>([]);
@@ -31,6 +27,13 @@ export default function Schedule() {
   const [highlightedLocation, setHighlightedLocation] = useState<string | null>(null);
 
   const mapUrl = supabase.storage.from('branding').getPublicUrl('seacliff-map.jpg').data.publicUrl;
+
+  const mapMarkers: Record<string, { x: number, y: number }> = {};
+  events.forEach(event => {
+    if (event.location_number && event.map_x !== undefined && event.map_y !== undefined) {
+      mapMarkers[event.location_number] = { x: event.map_x, y: event.map_y };
+    }
+  });
 
   useEffect(() => {
     async function fetchEvents() {
@@ -179,7 +182,7 @@ export default function Schedule() {
                  
                  {/* Map Markers Overlay */}
                  <div className="absolute inset-0">
-                   {Object.entries(MARKER_POSITIONS).map(([num, pos]) => (
+                   {Object.entries(mapMarkers).map(([num, pos]) => (
                      <div 
                        key={num}
                        className={`absolute flex items-center justify-center rounded-full font-bold shadow-md transition-all duration-300 w-5 h-5 md:w-6 md:h-6 bg-white text-brand-navy text-[10px] md:text-xs z-10`}
@@ -264,7 +267,7 @@ export default function Schedule() {
                   
                   {/* Modal Map Markers Overlay */}
                   <div className="absolute inset-0">
-                    {Object.entries(MARKER_POSITIONS).map(([num, pos]) => {
+                    {Object.entries(mapMarkers).map(([num, pos]) => {
                       const isHighlighted = highlightedLocation === num;
                       return (
                         <div 

@@ -11,6 +11,8 @@ interface Event {
   map_link: string;
   location_label?: string;
   location_number?: string;
+  map_x?: number;
+  map_y?: number;
 }
 
 export default function Events() {
@@ -25,8 +27,12 @@ export default function Events() {
     venue: '',
     map_link: '',
     location_label: '',
-    location_number: ''
+    location_number: '',
+    map_x: undefined as number | undefined,
+    map_y: undefined as number | undefined
   });
+
+  const mapUrl = supabase.storage.from('branding').getPublicUrl('seacliff-map.jpg').data.publicUrl;
 
   useEffect(() => {
     fetchEvents();
@@ -51,6 +57,11 @@ export default function Events() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (formData.map_x === undefined || formData.map_y === undefined) {
+      alert("Please click on the map below to specify the event location.");
+      return;
+    }
+    
     try {
       if (editingEvent) {
         const { error } = await supabase
@@ -67,7 +78,7 @@ export default function Events() {
       
       setIsModalOpen(false);
       setEditingEvent(null);
-      setFormData({ title: '', date: '', time: '', venue: '', map_link: '', location_label: '', location_number: '' });
+      setFormData({ title: '', date: '', time: '', venue: '', map_link: '', location_label: '', location_number: '', map_x: undefined, map_y: undefined });
       fetchEvents();
     } catch (error) {
       console.error('Error saving event:', error);
@@ -100,7 +111,9 @@ export default function Events() {
       venue: event.venue,
       map_link: event.map_link || '',
       location_label: event.location_label || '',
-      location_number: event.location_number || ''
+      location_number: event.location_number || '',
+      map_x: event.map_x,
+      map_y: event.map_y
     });
     setIsModalOpen(true);
   };
@@ -112,7 +125,7 @@ export default function Events() {
         <button
           onClick={() => {
             setEditingEvent(null);
-            setFormData({ title: '', date: '', time: '', venue: '', map_link: '', location_label: '', location_number: '' });
+            setFormData({ title: '', date: '', time: '', venue: '', map_link: '', location_label: '', location_number: '', map_x: undefined, map_y: undefined });
             setIsModalOpen(true);
           }}
           className="bg-brand-navy text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-brand-navy/90 transition-colors"
@@ -253,6 +266,33 @@ export default function Events() {
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-navy focus:border-transparent"
                     placeholder="e.g. 31"
                   />
+                </div>
+              </div>
+
+              {/* Map Location Picker */}
+              <div className="space-y-2 pt-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Event Location Pin <span className="text-red-500">*</span>
+                </label>
+                <p className="text-xs text-gray-500 mb-2">Click on the map to set the location pin for this event.</p>
+                <div 
+                  className="relative w-full cursor-crosshair rounded-xl overflow-hidden border border-gray-300"
+                  onClick={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const x = ((e.clientX - rect.left) / rect.width) * 100;
+                    const y = ((e.clientY - rect.top) / rect.height) * 100;
+                    setFormData({ ...formData, map_x: x, map_y: y });
+                  }}
+                >
+                  <img src={mapUrl} alt="Resort Map" className="w-full h-auto block" />
+                  {formData.map_x !== undefined && formData.map_y !== undefined && (
+                    <div 
+                      className="absolute w-5 h-5 bg-brand-gold rounded-full shadow-[0_0_10px_rgba(212,175,55,0.7)] border-2 border-white transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-[10px] text-white font-bold"
+                      style={{ left: `${formData.map_x}%`, top: `${formData.map_y}%` }}
+                    >
+                      {formData.location_number || '📍'}
+                    </div>
+                  )}
                 </div>
               </div>
 
