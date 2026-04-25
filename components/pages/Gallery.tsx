@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { getGallery } from '../../lib/api';
-import UploadSection from '../gallery/UploadSection';
-import GalleryGrid from '../gallery/GalleryGrid';
-import ImageModal from '../gallery/ImageModal';
+import { getGallery } from '@/lib/api';
+import UploadSection from '@/components/gallery/UploadSection';
+import GalleryGrid from '@/components/gallery/GalleryGrid';
+import ImageModal from '@/components/gallery/ImageModal';
 
 interface GalleryItem {
   id: string;

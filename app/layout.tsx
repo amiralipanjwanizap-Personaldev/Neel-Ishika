@@ -1,6 +1,6 @@
 import './globals.css';
 import { Inter, Playfair_Display, JetBrains_Mono } from 'next/font/google';
-import AppShell from '../components/AppShell';
+import AppShell from '@/components/AppShell';
 
 const inter = Inter({
   subsets: ['latin'],

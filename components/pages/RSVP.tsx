@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '@/lib/supabase';
 
 export default function RSVP() {
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');

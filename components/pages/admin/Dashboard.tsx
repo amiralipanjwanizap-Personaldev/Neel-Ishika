@@ -1,6 +1,6 @@
 import { useEffect, useState, FormEvent } from 'react';
 import { motion } from 'motion/react';
-import { supabase } from '../../../lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { Users, CheckCircle, XCircle, UserPlus, Calendar, Image as ImageIcon, BookOpen, Plane, Settings, Plus, Edit2, Trash2, MapPin, Clock, Shirt, Info, Save, X, Upload } from 'lucide-react';
 
 interface RSVP {

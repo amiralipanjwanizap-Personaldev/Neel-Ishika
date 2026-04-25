@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
-import { getStory } from '../../lib/api';
+import { getStory } from '@/lib/api';
 
 interface Milestone {
   id: string;

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'motion/react';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '@/lib/supabase';
 import ReactMarkdown from 'react-markdown';
 
 interface PageData {

@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Camera, Upload, CheckCircle2, Loader2, Image as ImageIcon, Film, Trophy, Flame, User } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
-import { getGallery } from '../../lib/api';
+import { supabase } from '@/lib/supabase';
+import { getGallery } from '@/lib/api';
 
 interface Challenge {
   id: string;
