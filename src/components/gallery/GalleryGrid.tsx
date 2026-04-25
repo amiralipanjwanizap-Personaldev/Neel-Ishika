@@ -31,7 +31,7 @@ export default function GalleryGrid({ items, onItemClick }: GalleryGridProps) {
             ease: [0.21, 0.47, 0.32, 0.98]
           }}
           onClick={() => onItemClick(item)}
-          className="group relative aspect-[4/5] sm:aspect-square bg-gray-100 rounded-2xl overflow-hidden cursor-pointer shadow-sm hover:shadow-xl transition-all duration-500"
+          className="group relative aspect-[4/5] sm:aspect-square bg-gray-100 rounded-2xl overflow-hidden cursor-pointer shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500"
         >
           {item.type === 'video' ? (
             <div className="w-full h-full relative">

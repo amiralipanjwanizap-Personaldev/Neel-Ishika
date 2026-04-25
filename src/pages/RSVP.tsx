@@ -73,7 +73,7 @@ export default function RSVP() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
         onSubmit={handleSubmit}
-        className="bg-white/60 backdrop-blur-sm p-8 md:p-10 rounded-2xl border border-brand-gold/20 shadow-sm space-y-6"
+        className="bg-white/60 backdrop-blur-sm p-8 md:p-10 rounded-2xl border border-brand-gold/20 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 space-y-6"
       >
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-brand-navy mb-2">

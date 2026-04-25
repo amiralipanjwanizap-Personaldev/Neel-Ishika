@@ -13,32 +13,24 @@
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 }
 
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 body {
   background-color: var(--brand-bg, #F5E9DA);
   color: var(--brand-text, #000000);
   font-family: var(--font-sans);
-}
-
-.primary-bg {
-  background-color: var(--brand-primary);
-}
-
-.secondary-bg {
-  background-color: var(--brand-secondary);
-}
-
-.text-theme {
-  color: var(--brand-text);
-}
-
-.primary-text {
-  color: var(--brand-primary);
-}
-
-.secondary-text {
-  color: var(--brand-secondary);
+  line-height: 1.6;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-serif);
+  text-wrap: balance;
+}
+
+p {
+  max-width: 65ch; /* max-w-prose equivalent to limit text width for readability */
 }
