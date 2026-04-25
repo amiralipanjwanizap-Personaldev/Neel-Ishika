@@ -21,6 +21,8 @@ interface Event {
   map_link: string;
   description: string;
   dress_code: string;
+  location_label?: string;
+  location_number?: string;
 }
 
 interface GalleryItem {
@@ -103,7 +105,9 @@ export default function Dashboard() {
     venue: '',
     map_link: '',
     description: '',
-    dress_code: ''
+    dress_code: '',
+    location_label: '',
+    location_number: ''
   });
 
   // Story Form State
@@ -499,7 +503,7 @@ export default function Dashboard() {
       }
       setIsEventModalOpen(false);
       setEditingEvent(null);
-      setEventForm({ title: '', date: '', time: '', venue: '', map_link: '', description: '', dress_code: '' });
+      setEventForm({ title: '', date: '', time: '', venue: '', map_link: '', description: '', dress_code: '', location_label: '', location_number: '' });
       fetchEvents();
     } catch (error) {
       alert('Error saving event');
@@ -527,7 +531,9 @@ export default function Dashboard() {
       venue: event.venue,
       map_link: event.map_link || '',
       description: event.description || '',
-      dress_code: event.dress_code || ''
+      dress_code: event.dress_code || '',
+      location_label: event.location_label || '',
+      location_number: event.location_number || ''
     });
     setIsEventModalOpen(true);
   };
@@ -683,7 +689,7 @@ export default function Dashboard() {
             <button
               onClick={() => {
                 setEditingEvent(null);
-                setEventForm({ title: '', date: '', time: '', venue: '', map_link: '', description: '', dress_code: '' });
+                setEventForm({ title: '', date: '', time: '', venue: '', map_link: '', description: '', dress_code: '', location_label: '', location_number: '' });
                 setIsEventModalOpen(true);
               }}
               className="flex items-center gap-2 bg-brand-navy text-white px-4 py-2 rounded-lg hover:bg-brand-gold transition-colors"
@@ -827,6 +833,28 @@ export default function Dashboard() {
                       className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-brand-gold outline-none"
                       placeholder="e.g. Traditional Wear"
                     />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Location Label</label>
+                      <input
+                        type="text"
+                        value={eventForm.location_label}
+                        onChange={(e) => setEventForm({ ...eventForm, location_label: e.target.value })}
+                        className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-brand-gold outline-none"
+                        placeholder="e.g. Boma Garden"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Map Number</label>
+                      <input
+                        type="text"
+                        value={eventForm.location_number}
+                        onChange={(e) => setEventForm({ ...eventForm, location_number: e.target.value })}
+                        className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-brand-gold outline-none"
+                        placeholder="e.g. 31"
+                      />
+                    </div>
                   </div>
                   <div className="space-y-1">
                     <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Description</label>

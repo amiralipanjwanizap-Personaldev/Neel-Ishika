@@ -9,6 +9,8 @@ interface Event {
   time: string;
   venue: string;
   map_link: string;
+  location_label?: string;
+  location_number?: string;
 }
 
 export default function Events() {
@@ -21,7 +23,9 @@ export default function Events() {
     date: '',
     time: '',
     venue: '',
-    map_link: ''
+    map_link: '',
+    location_label: '',
+    location_number: ''
   });
 
   useEffect(() => {
@@ -63,7 +67,7 @@ export default function Events() {
       
       setIsModalOpen(false);
       setEditingEvent(null);
-      setFormData({ title: '', date: '', time: '', venue: '', map_link: '' });
+      setFormData({ title: '', date: '', time: '', venue: '', map_link: '', location_label: '', location_number: '' });
       fetchEvents();
     } catch (error) {
       console.error('Error saving event:', error);
@@ -94,7 +98,9 @@ export default function Events() {
       date: event.date,
       time: event.time,
       venue: event.venue,
-      map_link: event.map_link || ''
+      map_link: event.map_link || '',
+      location_label: event.location_label || '',
+      location_number: event.location_number || ''
     });
     setIsModalOpen(true);
   };
@@ -106,7 +112,7 @@ export default function Events() {
         <button
           onClick={() => {
             setEditingEvent(null);
-            setFormData({ title: '', date: '', time: '', venue: '', map_link: '' });
+            setFormData({ title: '', date: '', time: '', venue: '', map_link: '', location_label: '', location_number: '' });
             setIsModalOpen(true);
           }}
           className="bg-brand-navy text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-brand-navy/90 transition-colors"
@@ -225,6 +231,29 @@ export default function Events() {
                   onChange={(e) => setFormData({ ...formData, venue: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-navy focus:border-transparent"
                 />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Location Label</label>
+                  <input
+                    type="text"
+                    value={formData.location_label}
+                    onChange={(e) => setFormData({ ...formData, location_label: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-navy focus:border-transparent"
+                    placeholder="e.g. Boma Garden"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Map Number</label>
+                  <input
+                    type="text"
+                    value={formData.location_number}
+                    onChange={(e) => setFormData({ ...formData, location_number: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-navy focus:border-transparent"
+                    placeholder="e.g. 31"
+                  />
+                </div>
               </div>
 
               <div>

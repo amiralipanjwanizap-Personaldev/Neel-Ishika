@@ -98,38 +98,11 @@ export default function Schedule() {
 
                 {/* Venue Map Guide Section */}
                 {event.location_number ? (
-                  <div className="mt-6 bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-                    <div className="p-3 bg-gray-50/50 border-b border-gray-100 flex items-start gap-2">
-                      <MapPin size={16} className="text-brand-gold mt-0.5 shrink-0" />
-                      <div>
-                        <div className="font-medium text-brand-navy text-sm">
-                          📍 Location: {event.location_label || event.venue} (Map No. {event.location_number})
-                        </div>
-                        <p className="text-xs text-brand-navy/60 mt-1">
-                          Find number {event.location_number} on the map to reach your event.
-                        </p>
-                      </div>
-                    </div>
-                    <div 
-                      className="relative h-40 cursor-pointer group bg-gray-100"
-                      onClick={() => setSelectedMap(mapUrl)}
-                    >
-                      <img 
-                        src={mapUrl} 
-                        alt="Resort Map" 
-                        loading="lazy"
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-brand-navy/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                        <span className="flex items-center gap-2 bg-white/95 text-brand-navy px-4 py-2 rounded-full text-sm font-medium shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
-                          <MapIcon size={16} />
-                          Tap to Expand Map
-                        </span>
-                      </div>
-                      
-                      {/* Interactive map prompt icon on bottom right */}
-                      <div className="absolute bottom-2 right-2 bg-white/90 p-1.5 rounded-full shadow-sm md:hidden">
-                        <MapIcon size={14} className="text-brand-navy" />
+                  <div className="mt-6 bg-brand-gold/5 p-3 rounded-xl border border-brand-gold/10 flex items-start gap-2">
+                    <MapPin size={16} className="text-brand-gold mt-0.5 shrink-0" />
+                    <div>
+                      <div className="font-medium text-brand-navy text-sm">
+                        📍 {event.location_label || event.venue} (Map No. {event.location_number})
                       </div>
                     </div>
                   </div>
@@ -155,6 +128,67 @@ export default function Schedule() {
             </motion.div>
           ))}
         </div>
+      )}
+
+      {/* Bottom Map Section */}
+      {events.length > 0 && (
+        <motion.div
+           initial={{ opacity: 0, y: 20 }}
+           whileInView={{ opacity: 1, y: 0 }}
+           viewport={{ once: true }}
+           className="mt-20 pt-16 border-t border-brand-gold/20"
+        >
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-serif text-brand-navy mb-4">Venue Map Guide</h2>
+            <p className="text-brand-navy/70">Find your event location using the map numbers below.</p>
+          </div>
+          
+          <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-brand-gold/20">
+             <div 
+               className="relative h-64 md:h-96 cursor-pointer group bg-gray-100"
+               onClick={() => setSelectedMap(mapUrl)}
+             >
+               <img 
+                 src={mapUrl} 
+                 alt="Resort Map" 
+                 loading="lazy"
+                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+               />
+               <div className="absolute inset-0 bg-brand-navy/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                 <span className="flex items-center gap-2 bg-white/95 text-brand-navy px-4 py-2 rounded-full text-sm font-medium shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+                   <MapIcon size={16} />
+                   Tap to Expand Map
+                 </span>
+               </div>
+               
+               <div className="absolute bottom-4 right-4 bg-white/90 p-2.5 rounded-full shadow-lg md:hidden">
+                 <MapIcon size={20} className="text-brand-navy" />
+               </div>
+             </div>
+             
+             <div className="p-8">
+               <h3 className="font-serif text-xl text-brand-navy mb-6">Event Locations</h3>
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                 {events.filter(e => e.location_number).length > 0 ? (
+                   events.filter(e => e.location_number).map((event) => (
+                     <div key={event.id} className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-100">
+                       <div className="w-8 h-8 rounded-full bg-brand-gold/10 text-brand-gold flex items-center justify-center font-bold text-sm shrink-0">
+                         {event.location_number}
+                       </div>
+                       <p className="text-sm text-brand-navy font-medium">
+                         {event.title} <span className="opacity-60 text-xs ml-1">→ {event.location_label || event.venue}</span>
+                       </p>
+                     </div>
+                   ))
+                 ) : (
+                   <div className="col-span-full text-center text-brand-navy/50 py-4 text-sm">
+                     Map locations will be added soon.
+                   </div>
+                 )}
+               </div>
+             </div>
+          </div>
+        </motion.div>
       )}
 
       {/* Map Interactive Modal */}
