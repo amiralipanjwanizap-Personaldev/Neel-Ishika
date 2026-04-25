@@ -8,11 +8,11 @@ import { motion, AnimatePresence } from 'motion/react';
 import { getSettings } from '@/lib/api';
 import { supabase } from '@/lib/supabase';
 import { SettingsProvider } from '@/context/SettingsContext';
-import { Navbar1 } from './navbar/Navbar1';
-import { Navbar2 } from './navbar/Navbar2';
-import { Navbar3 } from './navbar/Navbar3';
-import { Navbar4 } from './navbar/Navbar4';
-import { Navbar5 } from './navbar/Navbar5';
+import { Navbar1 } from '@/components/navbar/Navbar1';
+import { Navbar2 } from '@/components/navbar/Navbar2';
+import { Navbar3 } from '@/components/navbar/Navbar3';
+import { Navbar4 } from '@/components/navbar/Navbar4';
+import { Navbar5 } from '@/components/navbar/Navbar5';
 
 const navLinks = [
   { name: 'Home', path: '/' },
