@@ -18,10 +18,17 @@ interface Event {
   location_number?: string;
 }
 
+const MARKER_POSITIONS: Record<string, {x: number, y: number}> = {
+  "31": { x: 65, y: 40 },
+  "8": { x: 30, y: 60 },
+  "15": { x: 50, y: 75 }
+};
+
 export default function Schedule() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedMap, setSelectedMap] = useState<string | null>(null);
+  const [highlightedLocation, setHighlightedLocation] = useState<string | null>(null);
 
   const mapUrl = supabase.storage.from('branding').getPublicUrl('seacliff-map.jpg').data.publicUrl;
 
@@ -98,12 +105,23 @@ export default function Schedule() {
 
                 {/* Venue Map Guide Section */}
                 {event.location_number ? (
-                  <div className="mt-6 bg-brand-gold/5 p-3 rounded-xl border border-brand-gold/10 flex items-start gap-2">
-                    <MapPin size={16} className="text-brand-gold mt-0.5 shrink-0" />
-                    <div>
-                      <div className="font-medium text-brand-navy text-sm">
-                        📍 {event.location_label || event.venue} (Map No. {event.location_number})
+                  <div 
+                    onClick={() => {
+                      setSelectedMap(mapUrl);
+                      setHighlightedLocation(event.location_number!);
+                    }}
+                    className="mt-6 bg-brand-gold/5 p-3 rounded-xl border border-brand-gold/10 flex items-center justify-between cursor-pointer hover:bg-brand-gold/10 transition-colors group/map"
+                  >
+                    <div className="flex items-start gap-2">
+                      <MapPin size={16} className="text-brand-gold mt-0.5 shrink-0" />
+                      <div>
+                        <div className="font-medium text-brand-navy text-sm">
+                          📍 {event.location_label || event.venue} (Map No. {event.location_number})
+                        </div>
                       </div>
+                    </div>
+                    <div className="text-brand-gold bg-white p-1.5 rounded-full shadow-sm group-hover/map:scale-110 transition-transform">
+                      <MapIcon size={14} />
                     </div>
                   </div>
                 ) : (
@@ -145,23 +163,42 @@ export default function Schedule() {
           
           <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-brand-gold/20">
              <div 
-               className="relative h-64 md:h-96 cursor-pointer group bg-gray-100"
-               onClick={() => setSelectedMap(mapUrl)}
+               className="relative w-full cursor-pointer group bg-gray-100"
+               onClick={() => {
+                 setSelectedMap(mapUrl);
+                 setHighlightedLocation(null);
+               }}
              >
-               <img 
-                 src={mapUrl} 
-                 alt="Resort Map" 
-                 loading="lazy"
-                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-               />
-               <div className="absolute inset-0 bg-brand-navy/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+               <div className="relative w-full transition-transform duration-700 group-hover:scale-[1.02]">
+                 <img 
+                   src={mapUrl} 
+                   alt="Resort Map" 
+                   loading="lazy"
+                   className="w-full h-auto block"
+                 />
+                 
+                 {/* Map Markers Overlay */}
+                 <div className="absolute inset-0">
+                   {Object.entries(MARKER_POSITIONS).map(([num, pos]) => (
+                     <div 
+                       key={num}
+                       className={`absolute flex items-center justify-center rounded-full font-bold shadow-md transition-all duration-300 w-5 h-5 md:w-6 md:h-6 bg-white text-brand-navy text-[10px] md:text-xs z-10`}
+                       style={{ top: `${pos.y}%`, left: `${pos.x}%`, transform: `translate(-50%, -50%)` }}
+                     >
+                       {num}
+                     </div>
+                   ))}
+                 </div>
+               </div>
+               
+               <div className="absolute inset-0 bg-brand-navy/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-20">
                  <span className="flex items-center gap-2 bg-white/95 text-brand-navy px-4 py-2 rounded-full text-sm font-medium shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
                    <MapIcon size={16} />
                    Tap to Expand Map
                  </span>
                </div>
                
-               <div className="absolute bottom-4 right-4 bg-white/90 p-2.5 rounded-full shadow-lg md:hidden">
+               <div className="absolute bottom-4 right-4 bg-white/90 p-2.5 rounded-full shadow-lg md:hidden z-20">
                  <MapIcon size={20} className="text-brand-navy" />
                </div>
              </div>
@@ -214,13 +251,41 @@ export default function Schedule() {
               className="flex-1 w-full h-full overflow-auto touch-pan-x touch-pan-y"
               onClick={() => setSelectedMap(null)}
             >
-              <div className="min-w-full min-h-full flex items-center justify-center p-4">
-                <img 
-                  src={selectedMap} 
-                  alt="Expanded Resort Map" 
-                  className="max-w-none w-[150vw] md:w-[80vw] lg:w-[60vw] h-auto object-contain bg-white rounded-xl shadow-2xl cursor-move"
+              <div className="min-w-full min-h-full flex items-center justify-center p-4 md:p-10">
+                <div 
+                  className="relative max-w-none w-[150vw] md:w-[90vw] lg:w-[75vw] xl:w-[60vw]"
                   onClick={(e) => e.stopPropagation()}
-                />
+                >
+                  <img 
+                    src={selectedMap} 
+                    alt="Expanded Resort Map" 
+                    className="w-full h-auto block bg-white rounded-xl shadow-2xl"
+                  />
+                  
+                  {/* Modal Map Markers Overlay */}
+                  <div className="absolute inset-0">
+                    {Object.entries(MARKER_POSITIONS).map(([num, pos]) => {
+                      const isHighlighted = highlightedLocation === num;
+                      return (
+                        <div 
+                          key={num}
+                          className={`absolute flex items-center justify-center rounded-full font-bold shadow-lg transition-all duration-300 ${
+                            isHighlighted 
+                              ? 'w-10 h-10 md:w-12 md:h-12 bg-brand-gold text-white shadow-[0_0_20px_rgba(212,175,55,0.7)] z-30 text-base md:text-lg ring-4 ring-white' 
+                              : 'w-6 h-6 md:w-8 md:h-8 bg-white/90 text-brand-navy z-20 text-xs md:text-sm border border-brand-gold/20'
+                          }`}
+                          style={{ 
+                            top: `${pos.y}%`, 
+                            left: `${pos.x}%`, 
+                            transform: `translate(-50%, -50%) ${isHighlighted ? 'scale(1.2)' : 'scale(1)'}` 
+                          }}
+                        >
+                          {num}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
             </div>
           </motion.div>
