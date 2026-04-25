@@ -1,20 +1,8 @@
-import { useOutletContext } from 'react-router-dom';
-import { ClassicTemplate, ModernTemplate, LuxuryTemplate } from '../components/home/Templates';
-
-interface Settings {
-  logo_url?: string;
-  music_url?: string;
-  music_enabled?: boolean;
-  tagline?: string;
-  wedding_date?: string;
-  homepage_template?: 'classic' | 'modern' | 'luxury';
-  homepage_bg_url?: string;
-  font_family?: string;
-  logo_size?: string;
-}
+import { useSettings } from '../../context/SettingsContext';
+import { ClassicTemplate, ModernTemplate, LuxuryTemplate } from '../home/Templates';
 
 export default function Home() {
-  const { settings } = useOutletContext<{ settings: Settings | null }>();
+  const { settings } = useSettings();
 
   const template = settings?.homepage_template || 'classic';
   const names = "Neel & Ishika"; // In a real CMS, this could also be in settings

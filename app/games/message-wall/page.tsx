@@ -1,6 +1,6 @@
 'use client';
 
-import MessageWall from '../../../src/pages/MessageWall';
+import MessageWall from '../../../components/pages/MessageWall';
 
 export default function MessageWallPage() {
   return <MessageWall />;

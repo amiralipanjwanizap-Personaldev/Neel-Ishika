@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'next/navigation';
+import Link from 'next/link';
 import { motion } from 'motion/react';
-import { supabase } from '../lib/supabase';
+import { supabase } from '../../lib/supabase';
 import ReactMarkdown from 'react-markdown';
 
 interface PageData {
@@ -10,12 +11,14 @@ interface PageData {
 }
 
 export default function DynamicPage() {
-  const { slug } = useParams<{ slug: string }>();
+  const params = useParams();
+  const slug = params?.slug as string;
   const [page, setPage] = useState<PageData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
   useEffect(() => {
+    if (!slug) return;
     async function fetchPage() {
       try {
         setLoading(true);
@@ -55,7 +58,7 @@ export default function DynamicPage() {
       <div className="min-h-[60vh] flex flex-col justify-center items-center px-4 text-center">
         <h1 className="text-4xl font-serif text-brand-navy mb-4">Page Not Found</h1>
         <p className="text-gray-600 mb-8">The page you are looking for doesn't exist or has been moved.</p>
-        <Link to="/" className="bg-brand-navy text-white px-8 py-3 rounded-lg hover:bg-brand-gold transition-colors">
+        <Link href="/" className="bg-brand-navy text-white px-8 py-3 rounded-lg hover:bg-brand-gold transition-colors">
           Return Home
         </Link>
       </div>

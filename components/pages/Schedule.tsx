@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { format } from 'date-fns';
 import { MapPin, Calendar, Clock, Shirt, Info } from 'lucide-react';
-import { getEvents } from '../lib/api';
+import { getEvents } from '../../lib/api';
 
 interface Event {
   id: string;

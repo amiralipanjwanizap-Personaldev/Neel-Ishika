@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { supabase } from '../../lib/supabase';
-import { useNavigate } from 'react-router-dom';
+import { supabase } from '../../../lib/supabase';
+import { useRouter } from 'next/navigation';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,7 +21,7 @@ export default function Login() {
       });
 
       if (error) throw error;
-      navigate('/admin');
+      router.push('/admin');
     } catch (err: any) {
       setError(err.message || 'Failed to login');
     } finally {

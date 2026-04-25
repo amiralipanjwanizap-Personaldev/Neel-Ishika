@@ -1,19 +1,9 @@
 import React from 'react';
 import Link from 'next/link';
 import { Menu, X, Music, Music2 } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { NavbarProps } from './Navbar1';
 
-export interface NavbarProps {
-  settings: any;
-  navLinks: { name: string; path: string }[];
-  location: { pathname: string };
-  isMenuOpen: boolean;
-  setIsMenuOpen: (open: boolean) => void;
-  isPlaying: boolean;
-  toggleMusic: () => void;
-}
-
-export const Navbar1 = ({ 
+export const Navbar5 = ({ 
   settings, 
   navLinks, 
   location, 
@@ -24,6 +14,7 @@ export const Navbar1 = ({
 }: NavbarProps) => {
   const bgColor = settings?.navbar_bg_color || "var(--brand-bg, #F5E9DA)";
   const textColor = settings?.navbar_text_color || "var(--brand-primary, #1F3A5F)";
+  const accentColor = settings?.secondary_color || "var(--brand-secondary, #C9A46C)";
 
   const logoSizes: Record<string, string> = {
     small: "h-10 md:h-12",
@@ -35,17 +26,16 @@ export const Navbar1 = ({
 
   return (
     <header 
-      className="fixed w-full z-50 border-b transition-all duration-300"
+      className="fixed w-full z-50 transition-all duration-300"
       style={{ 
         backgroundColor: bgColor,
-        borderColor: "rgba(var(--brand-secondary-rgb, 201, 164, 108), 0.2)",
         color: textColor
       }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col items-center py-4">
-          {/* Logo Centered */}
-          <Link href="/" className="font-serif text-3xl mb-4 flex items-center gap-3">
+        <div className="flex justify-between items-center py-4">
+          {/* Logo */}
+          <Link href="/" className="font-serif text-2xl flex items-center gap-3">
             {settings?.logo_url ? (
               <img src={settings.logo_url} alt="Wedding Logo" className={`${logoClass} w-auto object-contain`} referrerPolicy="no-referrer" />
             ) : (
@@ -53,15 +43,21 @@ export const Navbar1 = ({
             )}
           </Link>
 
-          {/* Links Spaced Evenly */}
-          <nav className="hidden md:flex space-x-12 items-center">
+          {/* Links as Buttons */}
+          <nav className="hidden md:flex space-x-4 items-center">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
                 href={link.path}
-                className={`text-xs tracking-[0.2em] uppercase transition-all hover:opacity-70 ${
-                  location.pathname === link.path ? 'font-bold border-b border-current' : ''
+                className={`px-5 py-2 rounded-full text-xs tracking-widest uppercase transition-all duration-300 ${
+                  location.pathname === link.path 
+                    ? 'font-bold' 
+                    : 'hover:opacity-80'
                 }`}
+                style={{
+                  backgroundColor: location.pathname === link.path ? accentColor : "rgba(var(--brand-secondary-rgb, 201, 164, 108), 0.1)",
+                  color: location.pathname === link.path ? "#FFFFFF" : "inherit"
+                }}
               >
                 {link.name}
               </Link>
@@ -69,7 +65,8 @@ export const Navbar1 = ({
             {settings?.music_enabled !== false && (
               <button 
                 onClick={toggleMusic}
-                className="p-2 transition-colors hover:opacity-70"
+                className="p-3 rounded-full transition-all duration-300 hover:opacity-80"
+                style={{ backgroundColor: "rgba(var(--brand-secondary-rgb, 201, 164, 108), 0.1)" }}
                 aria-label="Toggle music"
               >
                 {isPlaying ? <Music size={18} /> : <Music2 size={18} className="opacity-50" />}
@@ -78,20 +75,13 @@ export const Navbar1 = ({
           </nav>
 
           {/* Mobile Menu Button */}
-          <div className="md:hidden absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-4">
+          <div className="md:hidden flex items-center gap-4">
             {settings?.music_enabled !== false && (
-              <button 
-                onClick={toggleMusic}
-                className="p-2"
-                aria-label="Toggle music"
-              >
+              <button onClick={toggleMusic} className="p-2">
                 {isPlaying ? <Music size={20} /> : <Music2 size={20} className="opacity-50" />}
               </button>
             )}
-            <button
-              className="p-2"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
+            <button className="p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>

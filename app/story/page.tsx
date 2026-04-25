@@ -1,3 +1,3 @@
 'use client';
-import Story from '../../src/pages/Story';
+import Story from '../../components/pages/Story';
 export default function Page() { return <Story />; }

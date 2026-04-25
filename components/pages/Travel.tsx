@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Plane, Shield, FileText, Ship, ChevronDown, Info, ExternalLink, MapPin, Calendar } from 'lucide-react';
-import { getTravelInfo } from '../lib/api';
+import { getTravelInfo } from '../../lib/api';
 
 interface TravelData {
   visa_link: string;

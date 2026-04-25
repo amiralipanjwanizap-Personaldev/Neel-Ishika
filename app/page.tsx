@@ -1,7 +1,7 @@
 'use client';
 
-import { useSettings } from '../src/context/SettingsContext';
-import { ClassicTemplate, ModernTemplate, LuxuryTemplate } from '../src/components/home/Templates';
+import { useSettings } from '../context/SettingsContext';
+import { ClassicTemplate, ModernTemplate, LuxuryTemplate } from '../components/home/Templates';
 
 export default function Home() {
   const { settings } = useSettings();

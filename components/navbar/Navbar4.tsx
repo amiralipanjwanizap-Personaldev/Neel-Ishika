@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { Menu, X, Music, Music2 } from 'lucide-react';
 import { NavbarProps } from './Navbar1';
 
@@ -43,7 +43,7 @@ export const Navbar4 = ({
             {leftLinks.map((link) => (
               <Link
                 key={link.name}
-                to={link.path}
+                href={link.path}
                 className={`text-xs tracking-widest uppercase transition-all hover:opacity-70 ${
                   location.pathname === link.path ? 'font-bold' : ''
                 }`}
@@ -54,7 +54,7 @@ export const Navbar4 = ({
           </nav>
 
           {/* Logo Center */}
-          <Link to="/" className="font-serif text-2xl flex items-center gap-3 px-8">
+          <Link href="/" className="font-serif text-2xl flex items-center gap-3 px-8">
             {settings?.logo_url ? (
               <img src={settings.logo_url} alt="Wedding Logo" className={`${logoClass} w-auto object-contain`} referrerPolicy="no-referrer" />
             ) : (
@@ -67,7 +67,7 @@ export const Navbar4 = ({
             {rightLinks.map((link) => (
               <Link
                 key={link.name}
-                to={link.path}
+                href={link.path}
                 className={`text-xs tracking-widest uppercase transition-all hover:opacity-70 ${
                   location.pathname === link.path ? 'font-bold' : ''
                 }`}

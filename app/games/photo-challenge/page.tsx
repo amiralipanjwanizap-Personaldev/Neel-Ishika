@@ -1,6 +1,6 @@
 'use client';
 
-import PhotoChallenge from '../../../src/pages/PhotoChallenge';
+import PhotoChallenge from '../../../components/pages/PhotoChallenge';
 
 export default function PhotoChallengePage() {
   return <PhotoChallenge />;
