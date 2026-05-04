@@ -19,14 +19,19 @@ export const ClassicTemplate = ({ names, date, tagline, bgUrl, logoUrl, logoSize
   const logoClass = logoSizes[logoSize || 'medium'] || logoSizes.medium;
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <div className="relative w-full h-screen flex items-center justify-center overflow-hidden">
     {bgUrl && (
-      <div 
-        className="absolute inset-0 bg-cover bg-center z-0"
-        style={{ backgroundImage: `url(${bgUrl})` }}
-      >
-        <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" />
-      </div>
+      <>
+        <img 
+          src={bgUrl}
+          alt="Wedding Cover"
+          className="absolute inset-0 w-full h-full object-cover z-0"
+          style={{ objectFit: 'cover' }}
+          sizes="100vw"
+          fetchPriority="high"
+        />
+        <div className="absolute inset-0 z-0 bg-gradient-to-b from-black/20 via-black/40 to-black/60" />
+      </>
     )}
     <motion.div 
       initial={{ opacity: 0, y: 30 }}
@@ -117,16 +122,21 @@ export const ModernTemplate = ({ names, date, tagline, bgUrl, logoUrl, logoSize 
     </div>
     <div className="w-full md:w-1/2 h-[50vh] md:h-screen relative order-1 md:order-2">
       {bgUrl ? (
-        <img 
-          src={bgUrl} 
-          alt="Wedding" 
-          className="w-full h-full object-cover"
-          referrerPolicy="no-referrer"
-        />
+        <>
+          <img 
+            src={bgUrl} 
+            alt="Wedding Cover" 
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{ objectFit: 'cover' }}
+            sizes="100vw"
+            fetchPriority="high"
+            referrerPolicy="no-referrer"
+          />
+          <div className="absolute inset-0 bg-brand-navy/10" />
+        </>
       ) : (
-        <div className="w-full h-full bg-gray-100" />
+        <div className="w-full h-full bg-gray-100 relative" />
       )}
-      <div className="absolute inset-0 bg-brand-navy/10" />
     </div>
   </div>
   );
@@ -142,7 +152,7 @@ export const LuxuryTemplate = ({ names, date, tagline, bgUrl, logoUrl, logoSize 
 
   return (
     <div 
-      className="relative min-h-screen flex items-center justify-center overflow-hidden"
+      className="relative w-full h-screen flex items-center justify-center overflow-hidden"
       style={{ backgroundColor: "var(--brand-primary)" }}
     >
     {bgUrl && (
@@ -150,12 +160,20 @@ export const LuxuryTemplate = ({ names, date, tagline, bgUrl, logoUrl, logoSize 
         initial={{ scale: 1.1 }}
         animate={{ scale: 1 }}
         transition={{ duration: 10, repeat: Infinity, repeatType: 'reverse' }}
-        className="absolute inset-0 bg-cover bg-center z-0 opacity-60"
-        style={{ backgroundImage: `url(${bgUrl})` }}
-      />
+        className="absolute inset-0 z-0"
+      >
+        <img 
+          src={bgUrl}
+          alt="Wedding Cover"
+          className="w-full h-full object-cover opacity-60"
+          style={{ objectFit: 'cover' }}
+          sizes="100vw"
+          fetchPriority="high"
+        />
+      </motion.div>
     )}
     <div 
-      className="absolute inset-0 z-10" 
+      className="absolute inset-0 z-10 bg-gradient-to-b from-brand-primary/80 via-transparent to-brand-primary/80" 
       style={{ 
         background: "linear-gradient(to bottom, rgba(var(--brand-primary-rgb, 31, 58, 95), 0.8), transparent, rgba(var(--brand-primary-rgb, 31, 58, 95), 0.8))" 
       }}
