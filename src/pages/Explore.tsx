@@ -46,8 +46,8 @@ export default function Explore() {
   };
 
   const tourOperators = [
-    { name: "Zanzibar Quest", phone: "+255 777 123 456", desc: "For all Zanzibar island tours, safaris and excursions." },
-    { name: "Dar Explorers", phone: "+255 754 987 654", desc: "City tours, boat trips, and mainland safaris." }
+    { name: "Sona Thakrar", phone: "+255713282822" },
+    { name: "Abbas Takim", phone: "+255689099600" }
   ];
 
   return (
@@ -172,16 +172,24 @@ export default function Explore() {
           <div className="md:w-1/3">
             <h2 className="text-3xl font-serif mb-4">Tour Operators</h2>
             <p className="text-white/70 leading-relaxed text-sm">
-              We recommend reaching out to these trusted local operators to help plan your excursions, transfers, and safaris.
+              For those wishing to explore safaris or bespoke tours across Tanzania, we are happy to recommend trusted operators who can assist via WhatsApp.
             </p>
           </div>
           <div className="md:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-6">
             {tourOperators.map((operator, i) => (
-              <div key={i} className="bg-white/10 p-6 rounded-2xl border border-white/10 backdrop-blur-sm">
-                <h3 className="text-lg font-bold text-brand-gold mb-2">{operator.name}</h3>
-                <p className="text-sm text-white/70 mb-4">{operator.desc}</p>
-                <a href={`https://wa.me/${operator.phone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm font-medium hover:text-brand-gold transition-colors">
-                  <Phone size={14} /> {operator.phone} <ChevronRight size={14} />
+              <div key={i} className="bg-white/10 p-6 rounded-2xl border border-white/10 backdrop-blur-sm flex flex-col h-full">
+                <h3 className="text-lg font-bold text-brand-gold mb-1">{operator.name}</h3>
+                <div className="flex items-center gap-2 text-white/70 mb-6">
+                  <Phone size={14} /> <span>{operator.phone}</span>
+                </div>
+                <a 
+                  href={`https://wa.me/${operator.phone.replace(/[^0-9]/g, '')}`} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="mt-auto w-full bg-brand-gold text-white px-4 py-3 rounded-xl font-medium hover:bg-brand-gold/90 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-brand-gold/20"
+                >
+                  <span>Chat on WhatsApp</span>
+                  <ChevronRight size={16} />
                 </a>
               </div>
             ))}
