@@ -207,6 +207,16 @@ export default function Travel() {
             </>
           )}
 
+          <AccordionItem title="Transfers (Airport & Seaport)">
+            <p className="whitespace-pre-wrap leading-relaxed">
+              <strong className="text-brand-gold">Airport & Seaport Transfers Provided</strong><br/><br/>
+              Transfers to the resort will be provided on the following dates:<br/>
+              • <strong>20th & 21st August:</strong> Arrival Transfers<br/>
+              • <strong>24th August:</strong> Departure Transfers<br/><br/>
+              Please ensure your travel arrangements align with these dates for complimentary transfers.
+            </p>
+          </AccordionItem>
+
           {travelData?.ferry_info && (
             <AccordionItem title="Ferry / Port Information">
               <p className="whitespace-pre-wrap">{travelData.ferry_info}</p>

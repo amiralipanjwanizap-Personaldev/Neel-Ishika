@@ -8,9 +8,11 @@ import Layout from './components/Layout';
 import Home from './pages/Home';
 import Schedule from './pages/Schedule';
 import Travel from './pages/Travel';
-import RSVP from './pages/RSVP';
+import SpecialRequirements from './pages/SpecialRequirements';
 import Gallery from './pages/Gallery';
 import Story from './pages/Story';
+import Accommodation from './pages/Accommodation';
+import Explore from './pages/Explore';
 import PhotoChallenge from './pages/PhotoChallenge';
 import MessageWall from './pages/MessageWall';
 import DynamicPage from './pages/DynamicPage';
@@ -28,7 +30,9 @@ export default function App() {
           <Route index element={<Home />} />
           <Route path="schedule" element={<Schedule />} />
           <Route path="travel" element={<Travel />} />
-          <Route path="rsvp" element={<RSVP />} />
+          <Route path="accommodation" element={<Accommodation />} />
+          <Route path="explore" element={<Explore />} />
+          <Route path="special-requirements" element={<SpecialRequirements />} />
           <Route path="gallery" element={<Gallery />} />
           <Route path="story" element={<Story />} />
           <Route path="games/photo-challenge" element={<PhotoChallenge />} />

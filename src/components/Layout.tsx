@@ -14,7 +14,9 @@ const navLinks = [
   { name: 'Home', path: '/' },
   { name: 'Schedule', path: '/schedule' },
   { name: 'Travel', path: '/travel' },
-  { name: 'RSVP', path: '/rsvp' },
+  { name: 'Accommodation', path: '/accommodation' },
+  { name: 'Explore', path: '/explore' },
+  { name: 'Requirements', path: '/special-requirements' },
   { name: 'Gallery', path: '/gallery' },
   { name: 'Story', path: '/story' },
   { name: 'Challenge', path: '/games/photo-challenge' },
@@ -185,14 +187,14 @@ export default function Layout() {
       </main>
 
       <footer 
-        className="py-12 text-center relative"
+        className="py-12 mt-auto w-full flex flex-col items-center justify-center relative"
         style={{ 
           backgroundColor: "var(--brand-primary)", 
           color: "var(--brand-bg, #F5E9DA)" 
         }}
       >
-        <p className="font-serif text-xl mb-4">Neel & Ishika</p>
-        <p className="text-sm opacity-70 tracking-widest uppercase">
+        <p className="font-serif text-2xl md:text-3xl mb-4 tracking-wider">#NeelMetHisIshk</p>
+        <p className="text-sm opacity-70 tracking-widest uppercase text-center">
           {settings?.wedding_date ? `Zanzibar • ${settings.wedding_date}` : "Zanzibar • 2026"}
         </p>
         
