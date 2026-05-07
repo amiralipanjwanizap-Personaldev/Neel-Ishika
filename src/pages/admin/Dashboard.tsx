@@ -1210,7 +1210,7 @@ export default function Dashboard() {
                     <div className="space-y-1">
                       <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">URL Slug</label>
                       <div className="flex items-center gap-2">
-                        <span className="text-gray-400 text-sm">/page/</span>
+                        <span className="text-gray-400 text-sm">/</span>
                         <input
                           required
                           type="text"
@@ -1372,7 +1372,7 @@ export default function Dashboard() {
                 {pages.map((page) => (
                   <tr key={page.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 font-medium text-gray-900">{page.title}</td>
-                    <td className="px-6 py-4 text-gray-600">/page/{page.slug}</td>
+                    <td className="px-6 py-4 text-gray-600">/{page.slug}</td>
                     <td className="px-6 py-4 text-gray-500">
                       {new Date(page.created_at).toLocaleDateString()}
                     </td>

@@ -53,6 +53,7 @@ export default function Layout() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [settings, setSettings] = useState<Settings | null>(null);
+  const [customPages, setCustomPages] = useState<{title: string, slug: string}[]>([]);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const location = useLocation();
 
@@ -66,7 +67,15 @@ export default function Layout() {
         audioRef.current.loop = true;
       }
     }
+    async function fetchCustomPages() {
+      const { data } = await supabase.from('pages').select('title, slug').order('created_at', { ascending: true });
+      if (data) {
+        setCustomPages(data);
+      }
+    }
+    
     fetchSettings();
+    fetchCustomPages();
 
     // Subscribe to real-time updates for settings
     const settingsChannel = supabase
@@ -81,12 +90,28 @@ export default function Layout() {
       )
       .subscribe();
 
+    // Subscribe to real-time updates for pages
+    const pagesChannel = supabase
+      .channel('pages-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'pages' },
+        () => {
+          supabase.from('pages').select('title, slug').order('created_at', { ascending: true })
+            .then(({ data }) => {
+              if (data) setCustomPages(data);
+            });
+        }
+      )
+      .subscribe();
+
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current = null;
       }
       supabase.removeChannel(settingsChannel);
+      supabase.removeChannel(pagesChannel);
     };
   }, []);
 
@@ -140,6 +165,7 @@ export default function Layout() {
         setIsMenuOpen={setIsMenuOpen}
         isPlaying={isPlaying}
         toggleMusic={toggleMusic}
+        customPages={customPages}
       />
 
       {/* Mobile Nav */}
@@ -164,6 +190,19 @@ export default function Layout() {
                   style={{ color: settings?.navbar_text_color || "var(--brand-primary, #1F3A5F)" }}
                 >
                   {link.name}
+                </Link>
+              ))}
+              {customPages.map((page) => (
+                <Link
+                  key={page.slug}
+                  to={`/${page.slug}`}
+                  onClick={() => setIsMenuOpen(false)}
+                  className={`font-serif text-3xl transition-colors hover:opacity-70 ${
+                    location.pathname === `/${page.slug}` ? 'font-bold' : ''
+                  }`}
+                  style={{ color: settings?.navbar_text_color || "var(--brand-primary, #1F3A5F)" }}
+                >
+                  {page.title}
                 </Link>
               ))}
             </nav>

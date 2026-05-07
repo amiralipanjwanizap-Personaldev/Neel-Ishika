@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X, Music, Music2 } from 'lucide-react';
 import { NavbarProps } from './Navbar1';
+import { NavDropdown } from './NavDropdown';
 
 export const Navbar3 = ({ 
   settings, 
@@ -10,7 +11,8 @@ export const Navbar3 = ({
   isMenuOpen, 
   setIsMenuOpen, 
   isPlaying, 
-  toggleMusic 
+  toggleMusic,
+  customPages
 }: NavbarProps) => {
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -74,6 +76,7 @@ export const Navbar3 = ({
                 {link.name}
               </Link>
             ))}
+            <NavDropdown items={customPages || []} location={location} styleClass="text-sm tracking-widest uppercase" />
             {settings?.music_enabled !== false && (
               <button 
                 onClick={toggleMusic}

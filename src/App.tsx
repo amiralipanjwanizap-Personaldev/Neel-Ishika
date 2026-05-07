@@ -37,7 +37,7 @@ export default function App() {
           <Route path="story" element={<Story />} />
           <Route path="games/photo-challenge" element={<PhotoChallenge />} />
           <Route path="games/message-wall" element={<MessageWall />} />
-          <Route path="page/:slug" element={<DynamicPage />} />
+          <Route path=":slug" element={<DynamicPage />} />
         </Route>
 
         {/* Admin Routes */}

@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X, Music, Music2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { NavDropdown } from './NavDropdown';
 
 export interface NavbarProps {
   settings: any;
@@ -11,6 +12,7 @@ export interface NavbarProps {
   setIsMenuOpen: (open: boolean) => void;
   isPlaying: boolean;
   toggleMusic: () => void;
+  customPages?: { title: string; slug: string }[];
 }
 
 export const Navbar1 = ({ 
@@ -20,7 +22,8 @@ export const Navbar1 = ({
   isMenuOpen, 
   setIsMenuOpen, 
   isPlaying, 
-  toggleMusic 
+  toggleMusic,
+  customPages
 }: NavbarProps) => {
   const bgColor = settings?.navbar_bg_color || "var(--brand-bg, #F5E9DA)";
   const textColor = settings?.navbar_text_color || "var(--brand-primary, #1F3A5F)";
@@ -66,6 +69,7 @@ export const Navbar1 = ({
                 {link.name}
               </Link>
             ))}
+            <NavDropdown items={customPages || []} location={location} styleClass="text-xs tracking-[0.2em] uppercase" />
             {settings?.music_enabled !== false && (
               <button 
                 onClick={toggleMusic}
