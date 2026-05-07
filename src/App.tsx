@@ -11,8 +11,6 @@ import Travel from './pages/Travel';
 import SpecialRequirements from './pages/SpecialRequirements';
 import Gallery from './pages/Gallery';
 import Story from './pages/Story';
-import Accommodation from './pages/Accommodation';
-import Explore from './pages/Explore';
 import PhotoChallenge from './pages/PhotoChallenge';
 import MessageWall from './pages/MessageWall';
 import DynamicPage from './pages/DynamicPage';
@@ -30,14 +28,12 @@ export default function App() {
           <Route index element={<Home />} />
           <Route path="schedule" element={<Schedule />} />
           <Route path="travel" element={<Travel />} />
-          <Route path="accommodation" element={<Accommodation />} />
-          <Route path="explore" element={<Explore />} />
           <Route path="special-requirements" element={<SpecialRequirements />} />
           <Route path="gallery" element={<Gallery />} />
           <Route path="story" element={<Story />} />
           <Route path="games/photo-challenge" element={<PhotoChallenge />} />
           <Route path="games/message-wall" element={<MessageWall />} />
-          <Route path="page/:slug" element={<DynamicPage />} />
+          <Route path=":slug" element={<DynamicPage />} />
         </Route>
 
         {/* Admin Routes */}

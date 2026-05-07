@@ -2,7 +2,7 @@ import { Link, Outlet, useLocation } from 'react-router-dom';
 import { Lock } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { getSettings } from '../lib/api';
+import { getSettings, getNavPages } from '../lib/api';
 import { supabase } from '../lib/supabase';
 import { Navbar1 } from './navbar/Navbar1';
 import { Navbar2 } from './navbar/Navbar2';
@@ -10,18 +10,10 @@ import { Navbar3 } from './navbar/Navbar3';
 import { Navbar4 } from './navbar/Navbar4';
 import { Navbar5 } from './navbar/Navbar5';
 
-const navLinks = [
-  { name: 'Home', path: '/' },
-  { name: 'Schedule', path: '/schedule' },
-  { name: 'Travel', path: '/travel' },
-  { name: 'Accommodation', path: '/accommodation' },
-  { name: 'Explore', path: '/explore' },
-  { name: 'Requirements', path: '/special-requirements' },
-  { name: 'Gallery', path: '/gallery' },
-  { name: 'Story', path: '/story' },
-  { name: 'Challenge', path: '/games/photo-challenge' },
-  { name: 'Messages', path: '/games/message-wall' },
-];
+interface NavLink {
+  name: string;
+  path: string;
+}
 
 interface Settings {
   logo_url?: string;
@@ -53,20 +45,33 @@ export default function Layout() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [settings, setSettings] = useState<Settings | null>(null);
+  const [navLinks, setNavLinks] = useState<NavLink[]>([{ name: 'Home', path: '/' }]);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const location = useLocation();
 
   useEffect(() => {
-    async function fetchSettings() {
-      const data = await getSettings();
-      if (data) {
-        setSettings(data);
-        const musicUrl = data.music_url || 'https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3?filename=romantic-piano-112194.mp3';
+    async function fetchInitialData() {
+      const [settingsData, pagesData] = await Promise.all([
+        getSettings(),
+        getNavPages()
+      ]);
+
+      if (settingsData) {
+        setSettings(settingsData);
+        const musicUrl = settingsData.music_url || 'https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3?filename=romantic-piano-112194.mp3';
         audioRef.current = new Audio(musicUrl);
         audioRef.current.loop = true;
       }
+
+      if (pagesData) {
+        const dynamicLinks = pagesData.map((page: any) => ({
+          name: page.title,
+          path: `/${page.slug}`
+        }));
+        setNavLinks([{ name: 'Home', path: '/' }, ...dynamicLinks]);
+      }
     }
-    fetchSettings();
+    fetchInitialData();
 
     // Subscribe to real-time updates for settings
     const settingsChannel = supabase
@@ -81,12 +86,30 @@ export default function Layout() {
       )
       .subscribe();
 
+    // Subscribe to real-time updates for pages
+    const pagesChannel = supabase
+      .channel('pages-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'pages' },
+        async () => {
+          const updatedPages = await getNavPages();
+          const dynamicLinks = updatedPages.map((page: any) => ({
+            name: page.title,
+            path: `/${page.slug}`
+          }));
+          setNavLinks([{ name: 'Home', path: '/' }, ...dynamicLinks]);
+        }
+      )
+      .subscribe();
+
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current = null;
       }
       supabase.removeChannel(settingsChannel);
+      supabase.removeChannel(pagesChannel);
     };
   }, []);
 
