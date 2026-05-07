@@ -62,23 +62,35 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     let mounted = true;
 
     async function initAuth() {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!mounted) return;
-      
-      setSession(session);
-      const isUserAdmin = await verifyAdmin(session);
-      setIsAdmin(isUserAdmin);
-      setIsLoading(false);
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (!mounted) return;
+        
+        if (error) throw error;
+
+        setSession(session);
+        const isUserAdmin = await verifyAdmin(session);
+        setIsAdmin(isUserAdmin);
+      } catch (err) {
+        console.error("Auth init error:", err);
+      } finally {
+        if (mounted) setIsLoading(false);
+      }
     }
     
     initAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
-      if (!mounted) return;
-      setSession(newSession);
-      const isUserAdmin = await verifyAdmin(newSession);
-      setIsAdmin(isUserAdmin);
-      setIsLoading(false);
+      try {
+        if (!mounted) return;
+        setSession(newSession);
+        const isUserAdmin = await verifyAdmin(newSession);
+        setIsAdmin(isUserAdmin);
+      } catch (err) {
+        console.error("Auth state change error:", err);
+      } finally {
+        if (mounted) setIsLoading(false);
+      }
     });
 
     return () => {
