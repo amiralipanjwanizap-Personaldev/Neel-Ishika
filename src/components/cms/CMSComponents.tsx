@@ -1,15 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { useCMS } from '../../lib/CMSProvider';
-import { Settings, Image as ImageIcon, Save, X, Type, LayoutGrid } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
-import { supabase } from '../../lib/supabase';
-
-import React, { useState, useEffect } from 'react';
-import { useCMS } from '../../lib/CMSProvider';
 import { Settings, Image as ImageIcon, Save, X, Type, LayoutGrid, Plus, ArrowUp, ArrowDown, Copy, Eye, EyeOff, Trash } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { supabase } from '../../lib/supabase';
 import { CMSPage, CMSSection } from '../../lib/cmsUtils';
+import { Link } from 'react-router-dom';
+
+export const AdminBadge = () => {
+  const { isAdmin, isEditMode } = useCMS();
+  if (!isAdmin) return null;
+  return (
+    <Link 
+      to="/admin" 
+      className={`fixed top-4 right-4 z-[100] bg-brand-navy/90 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-xs font-medium shadow-md flex items-center gap-2 border border-brand-navy/10 hover:bg-brand-navy transition-colors ${isEditMode ? 'opacity-0 pointer-events-none' : ''}`}
+    >
+      <Settings size={14} className="text-brand-gold" />
+      Admin Editing Enabled
+    </Link>
+  );
+};
 
 export const CMSToolbar = () => {
   const { isAdmin, isEditMode, setIsEditMode, saveCmsData, cmsData } = useCMS();

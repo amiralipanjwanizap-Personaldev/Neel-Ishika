@@ -13,7 +13,8 @@ import Dashboard from './pages/admin/Dashboard';
 import Events from './pages/admin/Events';
 
 import { CMSProvider, useCMS } from './lib/CMSProvider';
-import { CMSToolbar } from './components/cms/CMSComponents';
+import { AuthProvider } from './lib/AuthProvider';
+import { CMSToolbar, AdminBadge } from './components/cms/CMSComponents';
 import { DynamicPageWrapper } from './components/cms/DynamicPageWrapper';
 
 function AppContent() {
@@ -23,6 +24,7 @@ function AppContent() {
 
   return (
     <>
+      <AdminBadge />
       <CMSToolbar />
       <Routes>
         {/* Public Routes via CMS */}
@@ -56,10 +58,12 @@ function AppContent() {
 
 export default function App() {
   return (
-    <CMSProvider>
-      <BrowserRouter>
-        <AppContent />
-      </BrowserRouter>
-    </CMSProvider>
+    <AuthProvider>
+      <CMSProvider>
+        <BrowserRouter>
+          <AppContent />
+        </BrowserRouter>
+      </CMSProvider>
+    </AuthProvider>
   );
 }

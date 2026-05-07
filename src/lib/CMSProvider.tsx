@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { supabase } from './supabase';
 import { CMSData, defaultCMSData } from './cmsUtils';
+import { useAuth } from './AuthProvider';
 
 interface CMSContextType {
   cmsData: CMSData;
@@ -15,24 +16,17 @@ interface CMSContextType {
 const CMSContext = createContext<CMSContextType | null>(null);
 
 export const CMSProvider = ({ children }: { children: ReactNode }) => {
+  const { isAdmin } = useAuth();
   const [cmsData, setCmsData] = useState<CMSData>(defaultCMSData);
   const [isLoading, setIsLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setIsAdmin(!!session);
-    });
-    
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      setIsAdmin(!!session);
-    });
-    
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
-  }, []);
+    // If user loses admin privileges, disable edit mode
+    if (!isAdmin) {
+      setIsEditMode(false);
+    }
+  }, [isAdmin]);
 
   useEffect(() => {
     const fetchCMS = async () => {
@@ -72,6 +66,10 @@ export const CMSProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const saveCmsData = async (newData: CMSData) => {
+    if (!isAdmin) {
+      console.error('Unauthorized: CMS saving disabled for non-admins');
+      return;
+    }
     try {
       setCmsData(newData);
       await supabase.from('pages').upsert({

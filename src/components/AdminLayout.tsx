@@ -1,36 +1,21 @@
-import { Outlet, Navigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { supabase } from '../lib/supabase';
+import { Outlet, Navigate, useNavigate } from 'react-router-dom';
+import { useAuth } from '../lib/AuthProvider';
 import { LogOut } from 'lucide-react';
 
 export default function AdminLayout() {
-  const [session, setSession] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setLoading(false);
-    });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+  const { session, isLoading, logout, isAdmin } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    await logout();
+    navigate('/admin/login');
   };
 
-  if (loading) {
+  if (isLoading) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   }
 
-  if (!session) {
+  if (!session || !isAdmin) {
     return <Navigate to="/admin/login" replace />;
   }
 
