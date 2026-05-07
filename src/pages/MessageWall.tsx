@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { MessageSquare, Send, Trash2, User, Clock, Loader2, Heart, Reply as ReplyIcon } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { useAuth } from '../lib/AuthProvider';
 
 export const dynamic = "force-dynamic";
 
@@ -43,7 +42,6 @@ function getRelativeTime(dateString: string) {
 }
 
 export default function MessageWall() {
-  const { isAdmin } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [name, setName] = useState('');
   const [message, setMessage] = useState('');
@@ -53,11 +51,13 @@ export default function MessageWall() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [replySubmitting, setReplySubmitting] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [status, setStatus] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const [tick, setTick] = useState(0);
 
   useEffect(() => {
     fetchMessages();
+    checkAdmin();
 
     // Update relative timestamps every minute
     const timer = setInterval(() => setTick(t => t + 1), 60000);
@@ -82,6 +82,11 @@ export default function MessageWall() {
       supabase.removeChannel(repliesSub);
     };
   }, []);
+
+  async function checkAdmin() {
+    const { data: { session } } = await supabase.auth.getSession();
+    setIsAdmin(!!session);
+  }
 
   async function fetchMessages() {
     try {

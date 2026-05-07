@@ -1,7 +1,5 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { EditableText, EditableImage } from '../cms/CMSComponents';
-import { useCMS } from '../../lib/CMSProvider';
 
 interface TemplateProps {
   names: string;
@@ -10,48 +8,29 @@ interface TemplateProps {
   bgUrl?: string;
   logoUrl?: string;
   logoSize?: string;
-  sectionId?: string;
-  pageId?: string;
-  data?: any;
 }
 
-const parseCmsField = (cmsData: any, saveCmsData: any, pageId: string, sectionId: string, field: string) => {
-  return (newVal: string) => {
-    const newCms = { ...cmsData };
-    const page = newCms.pages.find((p: any) => p.id === pageId);
-    if (!page) return;
-    const section = page.sections.find((s: any) => s.id === sectionId);
-    if (!section) return;
-    section.data = { ...section.data, [field]: newVal };
-    saveCmsData(newCms);
-  }
-}
-
-export const ClassicTemplate = ({ names, date, tagline, bgUrl, logoUrl, logoSize, sectionId, pageId, data }: TemplateProps) => {
-  const { cmsData, saveCmsData } = useCMS();
-  
+export const ClassicTemplate = ({ names, date, tagline, bgUrl, logoUrl, logoSize }: TemplateProps) => {
   const logoSizes: Record<string, string> = {
-    small: "h-28 md:h-36 lg:h-40",
-    medium: "h-40 md:h-52 lg:h-64",
-    large: "h-56 md:h-72 lg:h-96"
+    small: "h-20 md:h-24 lg:h-28",
+    medium: "h-28 md:h-36 lg:h-44",
+    large: "h-40 md:h-52 lg:h-64"
   };
   const logoClass = logoSizes[logoSize || 'medium'] || logoSizes.medium;
-
-  const handleChange = (field: string) => {
-    return pageId && sectionId ? parseCmsField(cmsData, saveCmsData, pageId, sectionId, field) : () => {};
-  };
 
   return (
     <div className="relative w-full h-screen flex items-center justify-center overflow-hidden">
     {bgUrl && (
       <>
-        <EditableImage 
-          value={bgUrl}
-          onChange={handleChange('bgUrl')}
+        <img 
+          src={bgUrl}
+          alt="Wedding Cover"
           className="absolute inset-0 w-full h-full object-cover z-0"
           style={{ objectFit: 'cover' }}
+          sizes="100vw"
+          fetchPriority="high"
         />
-        <div className="absolute inset-0 z-0 bg-gradient-to-b from-black/60 via-black/30 to-black/60" />
+        <div className="absolute inset-0 z-0 bg-gradient-to-b from-black/20 via-black/40 to-black/60" />
       </>
     )}
     <motion.div 
@@ -60,33 +39,29 @@ export const ClassicTemplate = ({ names, date, tagline, bgUrl, logoUrl, logoSize
       className="relative z-10 text-center text-white px-4"
     >
       {logoUrl ? (
-        <EditableImage 
-          value={logoUrl}
-          onChange={handleChange('logoUrl')}
-          className={`mx-auto ${logoClass} mb-8 object-contain drop-shadow-xl z-20 relative`}
+        <motion.img 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          src={logoUrl} 
+          alt="Wedding Logo" 
+          className={`mx-auto ${logoClass} mb-8 object-contain drop-shadow-xl`}
+          referrerPolicy="no-referrer"
         />
       ) : (
         <span className="inline-block px-4 py-1.5 bg-white/10 backdrop-blur-md text-white text-xs font-bold tracking-[0.3em] uppercase rounded-full mb-8 border border-white/20">
-          <EditableText value={tagline} onChange={handleChange('tagline')} render={v => <>{v}</>} />
+          {tagline}
         </span>
       )}
-      
-      <EditableText 
-        value={names}
-        onChange={handleChange('names')}
-        render={v => <h1 className="text-6xl md:text-8xl font-serif mb-8 leading-tight drop-shadow-2xl">{v}</h1>}
-      />
+      <h1 className="text-6xl md:text-8xl font-serif mb-8 leading-tight drop-shadow-2xl">
+        {names}
+      </h1>
       <div className="w-24 h-px bg-white/40 mx-auto mb-8" />
-      
-      <EditableText 
-        value={date}
-        onChange={handleChange('date')}
-        render={v => <p className="text-xl md:text-2xl font-serif tracking-widest opacity-90 italic">{v}</p>}
-      />
-      
+      <p className="text-xl md:text-2xl font-serif tracking-widest opacity-90 italic">
+        {date}
+      </p>
       {logoUrl && (
         <p className="mt-8 text-sm tracking-[0.3em] uppercase opacity-60">
-          <EditableText value={tagline} onChange={handleChange('tagline')} render={v => <>{v}</>} />
+          {tagline}
         </p>
       )}
     </motion.div>
@@ -96,9 +71,9 @@ export const ClassicTemplate = ({ names, date, tagline, bgUrl, logoUrl, logoSize
 
 export const ModernTemplate = ({ names, date, tagline, bgUrl, logoUrl, logoSize }: TemplateProps) => {
   const logoSizes: Record<string, string> = {
-    small: "h-20 md:h-24",
-    medium: "h-24 md:h-36",
-    large: "h-36 md:h-48"
+    small: "h-12 md:h-16",
+    medium: "h-16 md:h-24",
+    large: "h-24 md:h-32"
   };
   const logoClass = logoSizes[logoSize || 'medium'] || logoSizes.medium;
 
@@ -169,9 +144,9 @@ export const ModernTemplate = ({ names, date, tagline, bgUrl, logoUrl, logoSize 
 
 export const LuxuryTemplate = ({ names, date, tagline, bgUrl, logoUrl, logoSize }: TemplateProps) => {
   const logoSizes: Record<string, string> = {
-    small: "h-28 md:h-36 lg:h-40",
-    medium: "h-40 md:h-52 lg:h-64",
-    large: "h-56 md:h-72 lg:h-96"
+    small: "h-20 md:h-24 lg:h-28",
+    medium: "h-28 md:h-36 lg:h-44",
+    large: "h-40 md:h-52 lg:h-64"
   };
   const logoClass = logoSizes[logoSize || 'medium'] || logoSizes.medium;
 
@@ -190,7 +165,7 @@ export const LuxuryTemplate = ({ names, date, tagline, bgUrl, logoUrl, logoSize 
         <img 
           src={bgUrl}
           alt="Wedding Cover"
-          className="w-full h-full object-cover opacity-80"
+          className="w-full h-full object-cover opacity-60"
           style={{ objectFit: 'cover' }}
           sizes="100vw"
           fetchPriority="high"
@@ -198,7 +173,10 @@ export const LuxuryTemplate = ({ names, date, tagline, bgUrl, logoUrl, logoSize 
       </motion.div>
     )}
     <div 
-      className="absolute inset-0 z-10 bg-gradient-to-b from-black/60 via-black/30 to-black/60" 
+      className="absolute inset-0 z-10 bg-gradient-to-b from-brand-primary/80 via-transparent to-brand-primary/80" 
+      style={{ 
+        background: "linear-gradient(to bottom, rgba(var(--brand-primary-rgb, 31, 58, 95), 0.8), transparent, rgba(var(--brand-primary-rgb, 31, 58, 95), 0.8))" 
+      }}
     />
     
     <motion.div 
@@ -236,7 +214,7 @@ export const LuxuryTemplate = ({ names, date, tagline, bgUrl, logoUrl, logoSize 
         />
       </motion.div>
 
-      <h1 className="text-5xl md:text-8xl font-serif text-white mb-8 tracking-wider uppercase drop-shadow-2xl font-medium">
+      <h1 className="text-5xl md:text-8xl font-serif text-white mb-8 tracking-wider uppercase">
         {names}
       </h1>
       

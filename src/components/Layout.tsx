@@ -4,14 +4,13 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { getSettings } from '../lib/api';
 import { supabase } from '../lib/supabase';
-import { useCMS } from '../lib/CMSProvider';
 import { Navbar1 } from './navbar/Navbar1';
 import { Navbar2 } from './navbar/Navbar2';
 import { Navbar3 } from './navbar/Navbar3';
 import { Navbar4 } from './navbar/Navbar4';
 import { Navbar5 } from './navbar/Navbar5';
 
-const defaultNavLinks = [
+const navLinks = [
   { name: 'Home', path: '/' },
   { name: 'Schedule', path: '/schedule' },
   { name: 'Travel', path: '/travel' },
@@ -51,16 +50,11 @@ const navbars: Record<string, any> = {
 };
 
 export default function Layout() {
-  const { cmsData } = useCMS();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [settings, setSettings] = useState<Settings | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const location = useLocation();
-
-  const navLinks = cmsData.pages && cmsData.pages.length > 0 
-    ? cmsData.pages.filter(p => !p.isHidden).map(p => ({ name: p.name, path: p.path }))
-    : defaultNavLinks;
 
   useEffect(() => {
     async function fetchSettings() {
@@ -155,8 +149,8 @@ export default function Layout() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className={`fixed inset-0 z-40 pt-24 px-4 md:hidden ${location.pathname === '/' ? 'backdrop-blur-xl' : ''}`}
-            style={{ backgroundColor: location.pathname === '/' ? 'rgba(80, 0, 40, 0.95)' : (settings?.navbar_bg_color || "var(--brand-bg, #F5E9DA)") }}
+            className="fixed inset-0 z-40 pt-24 px-4 md:hidden"
+            style={{ backgroundColor: settings?.navbar_bg_color || "var(--brand-bg, #F5E9DA)" }}
           >
             <nav className="flex flex-col space-y-6 text-center">
               {navLinks.map((link) => (
@@ -167,7 +161,7 @@ export default function Layout() {
                   className={`font-serif text-3xl transition-colors hover:opacity-70 ${
                     location.pathname === link.path ? 'font-bold' : ''
                   }`}
-                  style={{ color: location.pathname === '/' ? '#FFFFFF' : (settings?.navbar_text_color || "var(--brand-primary, #1F3A5F)") }}
+                  style={{ color: settings?.navbar_text_color || "var(--brand-primary, #1F3A5F)" }}
                 >
                   {link.name}
                 </Link>

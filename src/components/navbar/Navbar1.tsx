@@ -22,11 +22,8 @@ export const Navbar1 = ({
   isPlaying, 
   toggleMusic 
 }: NavbarProps) => {
-  const isHome = location.pathname === '/';
-  
-  // Use a luxury translucent dark background on the homepage, otherwise default settings
-  const bgColor = isHome ? "rgba(80, 0, 40, 0.75)" : (settings?.navbar_bg_color || "var(--brand-bg, #F5E9DA)");
-  const textColor = isHome ? "#FFFFFF" : (settings?.navbar_text_color || "var(--brand-primary, #1F3A5F)");
+  const bgColor = settings?.navbar_bg_color || "var(--brand-bg, #F5E9DA)";
+  const textColor = settings?.navbar_text_color || "var(--brand-primary, #1F3A5F)";
 
   const logoSizes: Record<string, string> = {
     small: "h-10 md:h-12",
@@ -38,7 +35,7 @@ export const Navbar1 = ({
 
   return (
     <header 
-      className={`fixed w-full z-50 border-b transition-all duration-300 ${isHome ? 'backdrop-blur-md shadow-lg' : ''}`}
+      className="fixed w-full z-50 border-b transition-all duration-300"
       style={{ 
         backgroundColor: bgColor,
         borderColor: "rgba(var(--brand-secondary-rgb, 201, 164, 108), 0.2)",
