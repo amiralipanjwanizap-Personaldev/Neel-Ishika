@@ -3,41 +3,44 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/Layout';
-import Home from './pages/Home';
-import Schedule from './pages/Schedule';
-import Travel from './pages/Travel';
-import SpecialRequirements from './pages/SpecialRequirements';
-import Gallery from './pages/Gallery';
-import Story from './pages/Story';
-import Accommodation from './pages/Accommodation';
-import Explore from './pages/Explore';
-import PhotoChallenge from './pages/PhotoChallenge';
-import MessageWall from './pages/MessageWall';
+// import all other standard pages are now handled dynamically, but we keep imports for fallback if needed
 import DynamicPage from './pages/DynamicPage';
 import AdminLayout from './components/AdminLayout';
 import Login from './pages/admin/Login';
 import Dashboard from './pages/admin/Dashboard';
 import Events from './pages/admin/Events';
 
-export default function App() {
+import { CMSProvider, useCMS } from './lib/CMSProvider';
+import { CMSToolbar } from './components/cms/CMSComponents';
+import { DynamicPageWrapper } from './components/cms/DynamicPageWrapper';
+
+function AppContent() {
+  const { cmsData, isLoading } = useCMS();
+
+  if (isLoading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+
   return (
-    <BrowserRouter>
+    <>
+      <CMSToolbar />
       <Routes>
-        {/* Public Routes */}
+        {/* Public Routes via CMS */}
         <Route path="/" element={<Layout />}>
-          <Route index element={<Home />} />
-          <Route path="schedule" element={<Schedule />} />
-          <Route path="travel" element={<Travel />} />
-          <Route path="accommodation" element={<Accommodation />} />
-          <Route path="explore" element={<Explore />} />
-          <Route path="special-requirements" element={<SpecialRequirements />} />
-          <Route path="gallery" element={<Gallery />} />
-          <Route path="story" element={<Story />} />
-          <Route path="games/photo-challenge" element={<PhotoChallenge />} />
-          <Route path="games/message-wall" element={<MessageWall />} />
+          {cmsData.pages.map(page => {
+            if (page.path === '/') {
+              return <Route key={page.id} index element={<DynamicPageWrapper pageId={page.id} />} />;
+            }
+            return (
+              <Route 
+                 key={page.id} 
+                 path={page.path.replace(/^\//, '')} 
+                 element={<DynamicPageWrapper pageId={page.id} />} 
+              />
+            );
+          })}
           <Route path="page/:slug" element={<DynamicPage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
 
         {/* Admin Routes */}
@@ -47,6 +50,16 @@ export default function App() {
           <Route path="events" element={<Events />} />
         </Route>
       </Routes>
-    </BrowserRouter>
+    </>
+  );
+}
+
+export default function App() {
+  return (
+    <CMSProvider>
+      <BrowserRouter>
+        <AppContent />
+      </BrowserRouter>
+    </CMSProvider>
   );
 }

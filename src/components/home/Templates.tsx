@@ -1,5 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
+import { EditableText, EditableImage } from '../cms/CMSComponents';
+import { useCMS } from '../../lib/CMSProvider';
 
 interface TemplateProps {
   names: string;
@@ -8,9 +10,26 @@ interface TemplateProps {
   bgUrl?: string;
   logoUrl?: string;
   logoSize?: string;
+  sectionId?: string;
+  pageId?: string;
+  data?: any;
 }
 
-export const ClassicTemplate = ({ names, date, tagline, bgUrl, logoUrl, logoSize }: TemplateProps) => {
+const parseCmsField = (cmsData: any, saveCmsData: any, pageId: string, sectionId: string, field: string) => {
+  return (newVal: string) => {
+    const newCms = { ...cmsData };
+    const page = newCms.pages.find((p: any) => p.id === pageId);
+    if (!page) return;
+    const section = page.sections.find((s: any) => s.id === sectionId);
+    if (!section) return;
+    section.data = { ...section.data, [field]: newVal };
+    saveCmsData(newCms);
+  }
+}
+
+export const ClassicTemplate = ({ names, date, tagline, bgUrl, logoUrl, logoSize, sectionId, pageId, data }: TemplateProps) => {
+  const { cmsData, saveCmsData } = useCMS();
+  
   const logoSizes: Record<string, string> = {
     small: "h-28 md:h-36 lg:h-40",
     medium: "h-40 md:h-52 lg:h-64",
@@ -18,17 +37,19 @@ export const ClassicTemplate = ({ names, date, tagline, bgUrl, logoUrl, logoSize
   };
   const logoClass = logoSizes[logoSize || 'medium'] || logoSizes.medium;
 
+  const handleChange = (field: string) => {
+    return pageId && sectionId ? parseCmsField(cmsData, saveCmsData, pageId, sectionId, field) : () => {};
+  };
+
   return (
     <div className="relative w-full h-screen flex items-center justify-center overflow-hidden">
     {bgUrl && (
       <>
-        <img 
-          src={bgUrl}
-          alt="Wedding Cover"
+        <EditableImage 
+          value={bgUrl}
+          onChange={handleChange('bgUrl')}
           className="absolute inset-0 w-full h-full object-cover z-0"
           style={{ objectFit: 'cover' }}
-          sizes="100vw"
-          fetchPriority="high"
         />
         <div className="absolute inset-0 z-0 bg-gradient-to-b from-black/60 via-black/30 to-black/60" />
       </>
@@ -39,29 +60,33 @@ export const ClassicTemplate = ({ names, date, tagline, bgUrl, logoUrl, logoSize
       className="relative z-10 text-center text-white px-4"
     >
       {logoUrl ? (
-        <motion.img 
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          src={logoUrl} 
-          alt="Wedding Logo" 
-          className={`mx-auto ${logoClass} mb-8 object-contain drop-shadow-xl`}
-          referrerPolicy="no-referrer"
+        <EditableImage 
+          value={logoUrl}
+          onChange={handleChange('logoUrl')}
+          className={`mx-auto ${logoClass} mb-8 object-contain drop-shadow-xl z-20 relative`}
         />
       ) : (
         <span className="inline-block px-4 py-1.5 bg-white/10 backdrop-blur-md text-white text-xs font-bold tracking-[0.3em] uppercase rounded-full mb-8 border border-white/20">
-          {tagline}
+          <EditableText value={tagline} onChange={handleChange('tagline')} render={v => <>{v}</>} />
         </span>
       )}
-      <h1 className="text-6xl md:text-8xl font-serif mb-8 leading-tight drop-shadow-2xl">
-        {names}
-      </h1>
+      
+      <EditableText 
+        value={names}
+        onChange={handleChange('names')}
+        render={v => <h1 className="text-6xl md:text-8xl font-serif mb-8 leading-tight drop-shadow-2xl">{v}</h1>}
+      />
       <div className="w-24 h-px bg-white/40 mx-auto mb-8" />
-      <p className="text-xl md:text-2xl font-serif tracking-widest opacity-90 italic">
-        {date}
-      </p>
+      
+      <EditableText 
+        value={date}
+        onChange={handleChange('date')}
+        render={v => <p className="text-xl md:text-2xl font-serif tracking-widest opacity-90 italic">{v}</p>}
+      />
+      
       {logoUrl && (
         <p className="mt-8 text-sm tracking-[0.3em] uppercase opacity-60">
-          {tagline}
+          <EditableText value={tagline} onChange={handleChange('tagline')} render={v => <>{v}</>} />
         </p>
       )}
     </motion.div>
