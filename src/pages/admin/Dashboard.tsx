@@ -1,9 +1,7 @@
-import React, { useEffect, useState, FormEvent, Suspense, lazy } from 'react';
+import { useEffect, useState, FormEvent } from 'react';
 import { motion } from 'motion/react';
 import { supabase } from '../../lib/supabase';
 import { Users, CheckCircle, XCircle, UserPlus, Calendar, Image as ImageIcon, BookOpen, Plane, Settings, Plus, Edit2, Trash2, MapPin, Clock, Shirt, Info, Save, X, Upload } from 'lucide-react';
-
-const PageModal = lazy(() => import('./PageModal'));
 
 interface RSVP {
   id: string;
@@ -77,8 +75,6 @@ interface Page {
   slug: string;
   content: string;
   created_at: string;
-  is_visible?: boolean;
-  order_index?: number;
 }
 
 type Tab = 'dashboard' | 'events' | 'gallery' | 'story' | 'travel' | 'pages' | 'settings';
@@ -102,9 +98,7 @@ export default function Dashboard() {
   const [pageForm, setPageForm] = useState({
     title: '',
     slug: '',
-    content: '',
-    is_visible: true,
-    order_index: 0
+    content: ''
   });
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
@@ -480,7 +474,7 @@ export default function Dashboard() {
       }
       setIsPageModalOpen(false);
       setEditingPage(null);
-      setPageForm({ title: '', slug: '', content: '', is_visible: true, order_index: 0 });
+      setPageForm({ title: '', slug: '', content: '' });
       fetchPages();
     } catch (error) {
       alert('Error saving page');
@@ -562,9 +556,7 @@ export default function Dashboard() {
     setPageForm({
       title: page.title,
       slug: page.slug,
-      content: page.content,
-      is_visible: page.is_visible ?? true,
-      order_index: page.order_index ?? 0
+      content: page.content
     });
     setIsPageModalOpen(true);
   };
@@ -1184,15 +1176,81 @@ export default function Dashboard() {
 
           {/* Page Modal */}
           {isPageModalOpen && (
-            <Suspense fallback={<div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"><div className="w-10 h-10 border-4 border-brand-gold border-t-transparent rounded-full animate-spin"></div></div>}>
-              <PageModal
-                editingPage={editingPage}
-                pageForm={pageForm}
-                setPageForm={setPageForm}
-                setIsPageModalOpen={setIsPageModalOpen}
-                handleSavePage={handleSavePage}
-              />
-            </Suspense>
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="bg-white rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto"
+              >
+                <div className="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
+                  <h3 className="text-xl font-serif text-brand-navy">
+                    {editingPage ? 'Edit Page' : 'Create New Page'}
+                  </h3>
+                  <button onClick={() => setIsPageModalOpen(false)} className="text-gray-400 hover:text-gray-600">
+                    <X size={24} />
+                  </button>
+                </div>
+                <form onSubmit={handleSavePage} className="p-6 space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-1">
+                      <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Page Title</label>
+                      <input
+                        required
+                        type="text"
+                        value={pageForm.title}
+                        onChange={(e) => {
+                          const title = e.target.value;
+                          const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+                          setPageForm({ ...pageForm, title, slug: editingPage ? pageForm.slug : slug });
+                        }}
+                        className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-brand-gold outline-none"
+                        placeholder="e.g. Gift Registry"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">URL Slug</label>
+                      <div className="flex items-center gap-2">
+                        <span className="text-gray-400 text-sm">/page/</span>
+                        <input
+                          required
+                          type="text"
+                          value={pageForm.slug}
+                          onChange={(e) => setPageForm({ ...pageForm, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]+/g, '') })}
+                          className="flex-1 px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-brand-gold outline-none"
+                          placeholder="gift-registry"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Content (Markdown/HTML supported)</label>
+                    <textarea
+                      required
+                      value={pageForm.content}
+                      onChange={(e) => setPageForm({ ...pageForm, content: e.target.value })}
+                      className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-brand-gold outline-none min-h-[400px] font-mono text-sm"
+                      placeholder="Write your page content here..."
+                    />
+                  </div>
+                  <div className="pt-4 flex gap-3">
+                    <button
+                      type="submit"
+                      className="flex-1 bg-brand-navy text-white py-3 rounded-lg font-medium hover:bg-brand-gold transition-colors flex items-center justify-center gap-2"
+                    >
+                      <Save size={18} />
+                      {editingPage ? 'Update Page' : 'Create Page'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setIsPageModalOpen(false)}
+                      className="px-6 py-3 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              </motion.div>
+            </div>
           )}
         </div>
       )}
@@ -1290,7 +1348,7 @@ export default function Dashboard() {
             <button
               onClick={() => {
                 setEditingPage(null);
-                setPageForm({ title: '', slug: '', content: '', is_visible: true, order_index: 0 });
+                setPageForm({ title: '', slug: '', content: '' });
                 setIsPageModalOpen(true);
               }}
               className="flex items-center gap-2 bg-brand-navy text-white px-4 py-2 rounded-lg hover:bg-brand-gold transition-colors"
@@ -1306,8 +1364,7 @@ export default function Dashboard() {
                 <tr>
                   <th className="px-6 py-3 font-medium">Title</th>
                   <th className="px-6 py-3 font-medium">Slug</th>
-                  <th className="px-6 py-3 font-medium">Status</th>
-                  <th className="px-6 py-3 font-medium">Order</th>
+                  <th className="px-6 py-3 font-medium">Created</th>
                   <th className="px-6 py-3 font-medium text-right">Actions</th>
                 </tr>
               </thead>
@@ -1315,15 +1372,10 @@ export default function Dashboard() {
                 {pages.map((page) => (
                   <tr key={page.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 font-medium text-gray-900">{page.title}</td>
-                    <td className="px-6 py-4 text-gray-600">/{page.slug}</td>
-                    <td className="px-6 py-4">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        page.is_visible ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-                      }`}>
-                        {page.is_visible ? 'Visible' : 'Hidden'}
-                      </span>
+                    <td className="px-6 py-4 text-gray-600">/page/{page.slug}</td>
+                    <td className="px-6 py-4 text-gray-500">
+                      {new Date(page.created_at).toLocaleDateString()}
                     </td>
-                    <td className="px-6 py-4 text-gray-600">{page.order_index ?? 0}</td>
                     <td className="px-6 py-4 text-right space-x-2">
                       <button
                         onClick={() => openEditPage(page)}

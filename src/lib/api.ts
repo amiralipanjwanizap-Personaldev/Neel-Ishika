@@ -22,29 +22,6 @@ export async function getSettings() {
 }
 
 /**
- * Fetches all visible pages for navigation, sorted by order_index.
- */
-export async function getNavPages() {
-  try {
-    const { data, error } = await supabase
-      .from('pages')
-      .select('title, slug')
-      .eq('is_visible', true)
-      .order('order_index', { ascending: true })
-      .order('created_at', { ascending: true });
-
-    if (error) {
-      console.error('Error fetching nav pages:', error);
-      return [];
-    }
-    return data || [];
-  } catch (err) {
-    console.error('Unexpected error fetching nav pages:', err);
-    return [];
-  }
-}
-
-/**
  * Fetches all wedding events sorted by date and time.
  */
 export async function getEvents() {

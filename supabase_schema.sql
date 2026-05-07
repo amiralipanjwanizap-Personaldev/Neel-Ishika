@@ -21,17 +21,6 @@ CREATE TABLE public.rsvps (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- Create pages table
-CREATE TABLE public.pages (
-    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    title TEXT NOT NULL,
-    slug TEXT NOT NULL UNIQUE,
-    content TEXT NOT NULL,
-    is_visible BOOLEAN DEFAULT true NOT NULL,
-    order_index INTEGER DEFAULT 0 NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
-);
-
 -- Set up Row Level Security (RLS)
 
 -- Events: Anyone can read, only authenticated users can insert/update/delete
@@ -54,17 +43,6 @@ CREATE POLICY "Allow public insert access on rsvps"
 
 CREATE POLICY "Allow authenticated users to manage rsvps"
     ON public.rsvps FOR ALL
-    USING (auth.role() = 'authenticated');
-
--- Pages: Anyone can read, only authenticated can manage
-ALTER TABLE public.pages ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Allow public read access on pages"
-    ON public.pages FOR SELECT
-    USING (true);
-
-CREATE POLICY "Allow authenticated users to manage pages"
-    ON public.pages FOR ALL
     USING (auth.role() = 'authenticated');
 
 -- Enable realtime for rsvps table
