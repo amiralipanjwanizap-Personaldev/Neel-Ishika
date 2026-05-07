@@ -149,8 +149,8 @@ export default function Layout() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="fixed inset-0 z-40 pt-24 px-4 md:hidden"
-            style={{ backgroundColor: settings?.navbar_bg_color || "var(--brand-bg, #F5E9DA)" }}
+            className={`fixed inset-0 z-40 pt-24 px-4 md:hidden ${location.pathname === '/' ? 'backdrop-blur-xl' : ''}`}
+            style={{ backgroundColor: location.pathname === '/' ? 'rgba(80, 0, 40, 0.95)' : (settings?.navbar_bg_color || "var(--brand-bg, #F5E9DA)") }}
           >
             <nav className="flex flex-col space-y-6 text-center">
               {navLinks.map((link) => (
@@ -161,7 +161,7 @@ export default function Layout() {
                   className={`font-serif text-3xl transition-colors hover:opacity-70 ${
                     location.pathname === link.path ? 'font-bold' : ''
                   }`}
-                  style={{ color: settings?.navbar_text_color || "var(--brand-primary, #1F3A5F)" }}
+                  style={{ color: location.pathname === '/' ? '#FFFFFF' : (settings?.navbar_text_color || "var(--brand-primary, #1F3A5F)") }}
                 >
                   {link.name}
                 </Link>

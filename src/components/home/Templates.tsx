@@ -12,9 +12,9 @@ interface TemplateProps {
 
 export const ClassicTemplate = ({ names, date, tagline, bgUrl, logoUrl, logoSize }: TemplateProps) => {
   const logoSizes: Record<string, string> = {
-    small: "h-20 md:h-24 lg:h-28",
-    medium: "h-28 md:h-36 lg:h-44",
-    large: "h-40 md:h-52 lg:h-64"
+    small: "h-28 md:h-36 lg:h-40",
+    medium: "h-40 md:h-52 lg:h-64",
+    large: "h-56 md:h-72 lg:h-96"
   };
   const logoClass = logoSizes[logoSize || 'medium'] || logoSizes.medium;
 
@@ -30,7 +30,7 @@ export const ClassicTemplate = ({ names, date, tagline, bgUrl, logoUrl, logoSize
           sizes="100vw"
           fetchPriority="high"
         />
-        <div className="absolute inset-0 z-0 bg-gradient-to-b from-black/20 via-black/40 to-black/60" />
+        <div className="absolute inset-0 z-0 bg-gradient-to-b from-black/60 via-black/30 to-black/60" />
       </>
     )}
     <motion.div 
@@ -71,9 +71,9 @@ export const ClassicTemplate = ({ names, date, tagline, bgUrl, logoUrl, logoSize
 
 export const ModernTemplate = ({ names, date, tagline, bgUrl, logoUrl, logoSize }: TemplateProps) => {
   const logoSizes: Record<string, string> = {
-    small: "h-12 md:h-16",
-    medium: "h-16 md:h-24",
-    large: "h-24 md:h-32"
+    small: "h-20 md:h-24",
+    medium: "h-24 md:h-36",
+    large: "h-36 md:h-48"
   };
   const logoClass = logoSizes[logoSize || 'medium'] || logoSizes.medium;
 
@@ -144,9 +144,9 @@ export const ModernTemplate = ({ names, date, tagline, bgUrl, logoUrl, logoSize 
 
 export const LuxuryTemplate = ({ names, date, tagline, bgUrl, logoUrl, logoSize }: TemplateProps) => {
   const logoSizes: Record<string, string> = {
-    small: "h-20 md:h-24 lg:h-28",
-    medium: "h-28 md:h-36 lg:h-44",
-    large: "h-40 md:h-52 lg:h-64"
+    small: "h-28 md:h-36 lg:h-40",
+    medium: "h-40 md:h-52 lg:h-64",
+    large: "h-56 md:h-72 lg:h-96"
   };
   const logoClass = logoSizes[logoSize || 'medium'] || logoSizes.medium;
 
@@ -165,7 +165,7 @@ export const LuxuryTemplate = ({ names, date, tagline, bgUrl, logoUrl, logoSize 
         <img 
           src={bgUrl}
           alt="Wedding Cover"
-          className="w-full h-full object-cover opacity-60"
+          className="w-full h-full object-cover opacity-80"
           style={{ objectFit: 'cover' }}
           sizes="100vw"
           fetchPriority="high"
@@ -173,10 +173,7 @@ export const LuxuryTemplate = ({ names, date, tagline, bgUrl, logoUrl, logoSize 
       </motion.div>
     )}
     <div 
-      className="absolute inset-0 z-10 bg-gradient-to-b from-brand-primary/80 via-transparent to-brand-primary/80" 
-      style={{ 
-        background: "linear-gradient(to bottom, rgba(var(--brand-primary-rgb, 31, 58, 95), 0.8), transparent, rgba(var(--brand-primary-rgb, 31, 58, 95), 0.8))" 
-      }}
+      className="absolute inset-0 z-10 bg-gradient-to-b from-black/60 via-black/30 to-black/60" 
     />
     
     <motion.div 
@@ -214,7 +211,7 @@ export const LuxuryTemplate = ({ names, date, tagline, bgUrl, logoUrl, logoSize 
         />
       </motion.div>
 
-      <h1 className="text-5xl md:text-8xl font-serif text-white mb-8 tracking-wider uppercase">
+      <h1 className="text-5xl md:text-8xl font-serif text-white mb-8 tracking-wider uppercase drop-shadow-2xl font-medium">
         {names}
       </h1>
       
