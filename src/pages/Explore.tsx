@@ -10,37 +10,55 @@ export default function Explore() {
   const content = {
     zanzibar: {
       hotels: [
-        { name: 'Nungwi Beach Hotels', area: 'Nungwi (North)', desc: 'Known for white sandy beaches and vibrant nightlife.', recommended: true },
-        { name: 'Paje Areas', area: 'Paje (East)', desc: 'Perfect for kitesurfing and laid-back beach days.', recommended: false },
-        { name: 'Stone Town Boutique Hotels', area: 'Stone Town', desc: 'Historical heart of Zanzibar, great for first night stays.', recommended: false },
+        { name: 'Sea Cliff Resort & Spa', area: 'Featured Stay', desc: 'USD 235 B&B + Tax. Code: Ishika&Neel-21Aug2026. Contact: rm@seacliffzanzibar.com', recommended: true },
+        { name: 'Guest Accommodation', area: 'Official Info', desc: 'Provided for guests 21st-24th Aug. Check-in: 2pm. Check-out: 11am.', recommended: true },
+        { name: 'Nungwi & Kendwa', area: 'Lively Area', desc: 'Beautiful beaches and restaurants.', recommended: false },
+        { name: 'Paje & Jambiani', area: 'Relaxed Area', desc: 'Bohemian vibe, beach cafés and kitesurfing.', recommended: false },
+        { name: 'Stone Town', area: 'Historic Area', desc: 'Historic, cultural stay experience.', recommended: false },
+        { name: 'Samawa Living', area: 'Paje', desc: 'Modern living in Paje.', recommended: false },
+        { name: 'Lux Marijani', area: 'Pwani', desc: 'Luxury stay on the East Coast.', recommended: false },
+        { name: 'Le Mersenne', area: 'Michamvi', desc: 'Exclusive resort in Pingwe.', recommended: false },
+        { name: 'The Mora Zanzibar', area: 'Matemwe', desc: 'Elegant and peaceful.', recommended: false },
+        { name: 'Kivuli Beach Resort', area: 'Paje', desc: 'Premium beachfront stay.', recommended: false },
       ],
       restaurants: [
-        { name: 'The Rock Restaurant', area: 'Michamvi', desc: 'World famous restaurant built on a coral rock in the ocean.', type: 'Seafood/Global' },
-        { name: 'Emerson Spice Tea House', area: 'Stone Town', desc: 'Rooftop dining with 360-degree views of Stone Town.', type: 'Zanzibari' },
-        { name: 'Lukmaan', area: 'Stone Town', desc: 'Authentic local Zanzibar street food in a bustling restaurant environment.', type: 'Local Arabic/Indian' },
+        { name: 'Cape Town Fish Market', area: 'Stone Town', desc: 'Fresh seafood in the heart of the city.', type: 'Seafood' },
+        { name: 'Da Luigi Ristorante', area: 'Zanzibar', desc: 'Authentic Italian Pizzeria.', type: 'Italian' },
+        { name: 'Shanga', area: 'Paje', desc: 'Popular Beach Club restaurant.', type: 'Beach Club' },
+        { name: 'Bento', area: 'Paje', desc: 'Casual dining at the Food Court.', type: 'Food Court' },
+        { name: 'Mama Mia', area: 'Zanzibar', desc: 'Genuine Italian Gelato.', type: 'Gelato' },
+        { name: 'The Beach House', area: 'Stone Town', desc: 'Seaside dining with a view.', type: 'International' },
       ],
       activities: [
-        { name: 'Mnemba Island Snorkeling', desc: 'Crystal clear waters and incredible marine life.', icon: <span className="text-blue-500">🐟</span> },
-        { name: 'Nakupenda Sandbank', desc: 'A pristine isolated sandbank in the middle of the ocean.', icon: <Palmtree className="text-green-500" size={18} /> },
-        { name: 'Prison Island', desc: 'Historic island home to giant Aldabra tortoises.', icon: <span className="text-gray-500">🐢</span> },
-        { name: 'Jozani Forest', desc: 'Home to the rare Red Colobus monkeys.', icon: <span className="text-emerald-600">🐒</span> },
+        { name: 'Mnemba Island', desc: 'Vibrant marine life and snorkeling.', icon: <span className="text-blue-500">🐠</span> },
+        { name: 'Nakupenda Sandbank', desc: 'Isolated pristine sandbank.', icon: <Palmtree className="text-green-500" size={18} /> },
+        { name: 'Prison Island', desc: 'Giant tortoises and historical tours.', icon: <span className="text-gray-500">🐢</span> },
+        { name: 'Stone Town Tour', desc: 'Immersive walking tour through history.', icon: <Navigation className="text-brand-gold" size={18} /> },
+        { name: 'Salaam Cave', desc: 'Unique natural swimming cave.', icon: <span className="text-emerald-600">⛰️</span> },
+        { name: 'Quad Biking', desc: 'Adventure through the island landscapes.', icon: <span className="text-orange-500">🏎️</span> },
       ]
     },
     dar: {
       hotels: [
-        { name: 'Johari Rotana', area: 'City Center', desc: 'Premium luxury hotel with excellent harbor views.', recommended: true },
-        { name: 'Hyatt Regency (The Kilimanjaro)', area: 'City Center', desc: 'Classic luxury and great dining options.', recommended: true },
-        { name: 'Coral Beach Hotel', area: 'Msasani Peninsula', desc: 'Beautiful ocean views and relaxed vibe.', recommended: false },
+        { name: 'Four Points (New Africa)', area: 'Recommended', desc: '11–12 km · 20–35 min. Google Maps linked.', recommended: true },
+        { name: 'Protea Hotel (Courtyard)', area: 'Recommended', desc: '11–12 km · 20–35 min. Comfortable stay.', recommended: true },
+        { name: 'Hyatt Regency', area: 'Premium', desc: '~11 km · 20–35 min. The Kilimanjaro luxury.', recommended: true },
+        { name: 'Serena Hotel', area: 'Premium', desc: '~13 km · 25–40 min. Deluxe city experience.', recommended: true },
+        { name: 'Blue Sapphire', area: 'Airport', desc: '~3 km · 5–10 min. Best for airport convenience.', recommended: false },
+        { name: 'Golden Tulip City Center', area: 'Budget / Seaport', desc: 'Close to the ferry seaport.', recommended: false },
       ],
       restaurants: [
-        { name: 'Samaki Samaki', area: 'Masaki', desc: 'Lively seafood restaurant with great music and local vibes.', type: 'Seafood/Lounge' },
-        { name: 'Cape Town Fish Market', area: 'Msasani', desc: 'Excellent seafood right on the water.', type: 'Seafood/Sushi' },
-        { name: 'Addis In Dar', area: 'Ursino', desc: 'Traditional Ethiopian dining experience.', type: 'Ethiopian' },
+        { name: 'Levant', area: 'Masaki', desc: 'Authentic Lebanese flavors.', type: 'Lebanese' },
+        { name: 'Thai Kani', area: 'Msasani', desc: 'Exquisite Thai cuisine.', type: 'Thai' },
+        { name: 'Wavuvi Kempu', area: 'Masaki', desc: 'Mediterranean seafood and meats.', type: 'Seafood/Meats' },
+        { name: 'Samaki Samaki', area: 'Masaki', desc: 'Vibrant seafood and local vibe.', type: 'Seafood' },
+        { name: 'Zuane', area: 'Masaki', desc: 'Traditional Italian dishes.', type: 'Italian' },
+        { name: 'Flames / Chowpatty', area: 'Masaki', desc: 'Rich Indian culinary experience.', type: 'Indian' },
       ],
       activities: [
-        { name: 'Bongoyo Island', desc: 'A quick boat trip for a peaceful beach day near the city.', icon: <Palmtree className="text-green-500" size={18} /> },
-        { name: 'Slipway Shopping Center', desc: 'Souvenirs, restaurants, and a beautiful sunset view.', icon: <span className="text-orange-500">🛍️</span> },
-        { name: 'National Museum', desc: 'Learn about the history and heritage of Tanzania.', icon: <span className="text-amber-700">🏛️</span> },
+        { name: 'Bongoyo Island', desc: 'A quick boat trip for a peaceful beach day.', icon: <Palmtree className="text-green-500" size={18} /> },
+        { name: 'Slipway Center', desc: 'Souvenirs, shopping, and sunset views.', icon: <span className="text-orange-500">🛍️</span> },
+        { name: 'National Museum', desc: 'History and heritage of Tanzania.', icon: <span className="text-amber-700">🏛️</span> },
       ]
     }
   };
@@ -62,7 +80,9 @@ export default function Explore() {
         </span>
         <h1 className="text-4xl md:text-6xl font-serif text-brand-navy mb-6">Explore Tanzania</h1>
         <p className="text-brand-navy/60 max-w-2xl mx-auto text-lg leading-relaxed">
-          Our top recommendations for hotels, dining, and activities if you're extending your trip.
+          {activeTab === 'dar' 
+            ? "Traffic in Dar es Salaam can get busy during peak times. We recommend planning your travel accordingly."
+            : "Whichever you choose, we’re sure you’ll have an unforgettable experience on this beautiful island."}
         </p>
       </motion.div>
 
@@ -105,7 +125,7 @@ export default function Explore() {
               </div>
               <h2 className="text-3xl font-serif text-brand-navy">Where to Stay</h2>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {content[activeTab].hotels.map((hotel, i) => (
                 <div key={i} className="bg-white p-6 rounded-2xl border border-brand-navy/5 shadow-sm hover:shadow-md transition-shadow group">
                   <div className="flex justify-between items-start mb-3">
@@ -127,7 +147,7 @@ export default function Explore() {
               </div>
               <h2 className="text-3xl font-serif text-brand-navy">Where to Eat</h2>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {content[activeTab].restaurants.map((rest, i) => (
                 <div key={i} className="bg-white p-6 rounded-2xl border border-brand-navy/5 shadow-sm hover:shadow-md transition-shadow group">
                   <h3 className="text-lg font-bold text-brand-navy group-hover:text-brand-gold transition-colors mb-1">{rest.name}</h3>
@@ -165,7 +185,6 @@ export default function Explore() {
         </motion.div>
       </AnimatePresence>
 
-      {/* Tour Operators Section */}
       <section className="mt-20 p-8 md:p-12 bg-brand-navy text-white rounded-[2rem] relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-brand-gold/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
         <div className="relative z-10 flex flex-col md:flex-row gap-12">
