@@ -19,6 +19,7 @@ const navLinks = [
   { name: 'Requirements', path: '/special-requirements' },
   { name: 'Gallery', path: '/gallery' },
   { name: 'Story', path: '/story' },
+  { name: 'Beauty', path: '/beauty' },
   { name: 'Challenge', path: '/games/photo-challenge' },
   { name: 'Messages', path: '/games/message-wall' },
 ];

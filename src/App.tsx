@@ -13,6 +13,7 @@ import Gallery from './pages/Gallery';
 import Story from './pages/Story';
 import Accommodation from './pages/Accommodation';
 import Explore from './pages/Explore';
+import Beauty from './pages/Beauty';
 import PhotoChallenge from './pages/PhotoChallenge';
 import MessageWall from './pages/MessageWall';
 import DynamicPage from './pages/DynamicPage';
@@ -35,6 +36,7 @@ export default function App() {
           <Route path="special-requirements" element={<SpecialRequirements />} />
           <Route path="gallery" element={<Gallery />} />
           <Route path="story" element={<Story />} />
+          <Route path="beauty" element={<Beauty />} />
           <Route path="games/photo-challenge" element={<PhotoChallenge />} />
           <Route path="games/message-wall" element={<MessageWall />} />
           <Route path=":slug" element={<DynamicPage />} />
