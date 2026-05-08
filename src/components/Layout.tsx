@@ -31,7 +31,8 @@ const navLinks = [
     name: 'Wedding', 
     dropdown: [
       { title: 'Story', path: '/story' },
-      { title: 'Beauty', path: '/beauty' },
+      { title: 'Wedding Makeup Artist', path: '/beauty' },
+      { title: 'Important Contacts', path: '/important-contacts' },
       { title: 'Messages', path: '/games/message-wall' },
       { title: 'Challenge', path: '/games/photo-challenge' },
       { title: 'Gallery', path: '/gallery' },
