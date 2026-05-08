@@ -16,6 +16,7 @@ const navLinks = [
   { 
     name: 'Travel', 
     dropdown: [
+      { title: 'Travel Info', path: '/travel' },
       { title: 'Requirements', path: '/special-requirements' },
       { title: 'Explore', path: '/explore' },
       { title: 'Accommodation', path: '/accommodation' },
