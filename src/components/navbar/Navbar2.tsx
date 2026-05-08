@@ -20,7 +20,8 @@ export const Navbar2 = ({
   const logoSizes: Record<string, string> = {
     small: "h-10 md:h-12",
     medium: "h-14 md:h-16",
-    large: "h-20 md:h-24"
+    large: "h-20 md:h-24",
+    xlarge: "h-28 md:h-32"
   };
 
   const logoClass = logoSizes[settings?.logo_size || 'medium'] || logoSizes.medium;

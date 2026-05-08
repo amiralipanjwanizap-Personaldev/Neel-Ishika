@@ -1,5 +1,5 @@
 import { useOutletContext } from 'react-router-dom';
-import { ClassicTemplate, ModernTemplate, LuxuryTemplate } from '../components/home/Templates';
+import { ClassicTemplate, ModernTemplate, LuxuryTemplate, CinematicTemplate, EditorialTemplate, GlassTemplate, RomanticTemplate, MonogramTemplate } from '../components/home/Templates';
 
 export const dynamic = "force-dynamic";
 
@@ -9,7 +9,7 @@ interface Settings {
   music_enabled?: boolean;
   tagline?: string;
   wedding_date?: string;
-  homepage_template?: 'classic' | 'modern' | 'luxury';
+  homepage_template?: string;
   homepage_bg_url?: string;
   font_family?: string;
   logo_size?: string;
@@ -27,14 +27,25 @@ export default function Home() {
   const renderTemplate = () => {
     const logoUrl = settings?.logo_url;
     const logoSize = settings?.logo_size;
+    const props = { names, date, tagline, bgUrl, logoUrl, logoSize };
     switch (template) {
       case 'modern':
-        return <ModernTemplate names={names} date={date} tagline={tagline} bgUrl={bgUrl} logoUrl={logoUrl} logoSize={logoSize} />;
+        return <ModernTemplate {...props} />;
       case 'luxury':
-        return <LuxuryTemplate names={names} date={date} tagline={tagline} bgUrl={bgUrl} logoUrl={logoUrl} logoSize={logoSize} />;
+        return <LuxuryTemplate {...props} />;
+      case 'cinematic':
+        return <CinematicTemplate {...props} />;
+      case 'editorial':
+        return <EditorialTemplate {...props} />;
+      case 'glass':
+        return <GlassTemplate {...props} />;
+      case 'romantic':
+        return <RomanticTemplate {...props} />;
+      case 'monogram':
+        return <MonogramTemplate {...props} />;
       case 'classic':
       default:
-        return <ClassicTemplate names={names} date={date} tagline={tagline} bgUrl={bgUrl} logoUrl={logoUrl} logoSize={logoSize} />;
+        return <ClassicTemplate {...props} />;
     }
   };
 

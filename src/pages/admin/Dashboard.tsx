@@ -1483,6 +1483,7 @@ export default function Dashboard() {
                     <option value="small">Small</option>
                     <option value="medium">Medium</option>
                     <option value="large">Large</option>
+                    <option value="xlarge">Extra Large</option>
                   </select>
                 </div>
                 <div className="space-y-2">
@@ -1522,6 +1523,11 @@ export default function Dashboard() {
                     <option value="classic">Classic (Centered, Serif)</option>
                     <option value="modern">Modern (Split, Bold)</option>
                     <option value="luxury">Luxury (Full-screen, Animated)</option>
+                    <option value="cinematic">Cinematic Reveal</option>
+                    <option value="editorial">Editorial Minimal</option>
+                    <option value="glass">Glass Luxury</option>
+                    <option value="romantic">Romantic Motion</option>
+                    <option value="monogram">Modern Monogram</option>
                   </select>
                 </div>
                 <div className="space-y-2">
@@ -1531,9 +1537,35 @@ export default function Dashboard() {
                     onChange={(e) => setSettingsForm({ ...settingsForm, font_family: e.target.value })}
                     className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-brand-gold outline-none"
                   >
-                    <option value="font-sans">Sans Serif (Inter)</option>
-                    <option value="font-serif">Serif (Elegant)</option>
-                    <option value="font-mono">Monospace (Modern Tech)</option>
+                    <optgroup label="Core Fonts">
+                      <option value="font-sans">Sans Serif (Inter)</option>
+                      <option value="font-serif">Serif (Elegant)</option>
+                      <option value="font-mono">Monospace (Modern Tech)</option>
+                    </optgroup>
+                    <optgroup label="Elegant Serif">
+                      <option value="font-cormorant">Cormorant Garamond</option>
+                      <option value="font-cinzel">Cinzel</option>
+                      <option value="font-bodoni">Bodoni Moda</option>
+                      <option value="font-baskerville">Libre Baskerville</option>
+                      <option value="font-lora">Lora</option>
+                      <option value="font-notoserif">Noto Serif</option>
+                    </optgroup>
+                    <optgroup label="Luxury Sans/Clean">
+                      <option value="font-montserrat">Montserrat</option>
+                      <option value="font-lato">Lato</option>
+                      <option value="font-jakarta">Plus Jakarta Sans</option>
+                      <option value="font-outfit">Outfit</option>
+                    </optgroup>
+                    <optgroup label="Editorial">
+                      <option value="font-gilda">Gilda Display</option>
+                      <option value="font-italiana">Italiana</option>
+                      <option value="font-prata">Prata</option>
+                      <option value="font-tenor">Tenor Sans</option>
+                    </optgroup>
+                    <optgroup label="Romantic">
+                      <option value="font-amiri">Amiri</option>
+                      <option value="font-dancing">Dancing Script</option>
+                    </optgroup>
                   </select>
                 </div>
               </div>
@@ -1561,11 +1593,20 @@ export default function Dashboard() {
                     onChange={(e) => setSettingsForm({ ...settingsForm, navbar_template: e.target.value })}
                     className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-brand-gold outline-none"
                   >
-                    <option value="navbar1">Navbar 1 (Classic Elegant)</option>
-                    <option value="navbar2">Navbar 2 (Modern Minimal)</option>
-                    <option value="navbar3">Navbar 3 (Transparent Overlay)</option>
-                    <option value="navbar4">Navbar 4 (Split Layout)</option>
-                    <option value="navbar5">Navbar 5 (Button Style)</option>
+                    <optgroup label="Standard Templates">
+                      <option value="navbar1">Navbar 1 (Classic Elegant)</option>
+                      <option value="navbar2">Navbar 2 (Modern Minimal)</option>
+                      <option value="navbar3">Navbar 3 (Transparent Overlay)</option>
+                      <option value="navbar4">Navbar 4 (Split Layout)</option>
+                      <option value="navbar5">Navbar 5 (Button Style)</option>
+                    </optgroup>
+                    <optgroup label="Premium Templates">
+                      <option value="navbar6">Navbar 6 (Floating Glass)</option>
+                      <option value="navbar7">Navbar 7 (Centered Editorial)</option>
+                      <option value="navbar8">Navbar 8 (Luxury Border)</option>
+                      <option value="navbar9">Navbar 9 (Compact Premium)</option>
+                      <option value="navbar10">Navbar 10 (Modern Wedding)</option>
+                    </optgroup>
                   </select>
                 </div>
               </div>

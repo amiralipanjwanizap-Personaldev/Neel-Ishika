@@ -9,6 +9,11 @@ import { Navbar2 } from './navbar/Navbar2';
 import { Navbar3 } from './navbar/Navbar3';
 import { Navbar4 } from './navbar/Navbar4';
 import { Navbar5 } from './navbar/Navbar5';
+import { Navbar6 } from './navbar/Navbar6';
+import { Navbar7 } from './navbar/Navbar7';
+import { Navbar8 } from './navbar/Navbar8';
+import { Navbar9 } from './navbar/Navbar9';
+import { Navbar10 } from './navbar/Navbar10';
 
 const navLinks = [
   { name: 'Home', path: '/' },
@@ -99,11 +104,17 @@ const navbars: Record<string, any> = {
   navbar3: Navbar3,
   navbar4: Navbar4,
   navbar5: Navbar5,
+  navbar6: Navbar6,
+  navbar7: Navbar7,
+  navbar8: Navbar8,
+  navbar9: Navbar9,
+  navbar10: Navbar10,
 };
 
 export default function Layout() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [showMusicOverlay, setShowMusicOverlay] = useState(false);
   const [settings, setSettings] = useState<Settings | null>(null);
   const [customPages, setCustomPages] = useState<{title: string, slug: string}[]>([]);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -114,11 +125,40 @@ export default function Layout() {
       const data = await getSettings();
       if (data) {
         setSettings(data);
-        const musicUrl = data.music_url || 'https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3?filename=romantic-piano-112194.mp3';
-        audioRef.current = new Audio(musicUrl);
-        audioRef.current.loop = true;
+        if (data.music_enabled !== false) {
+          const musicUrl = data.music_url || 'https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3?filename=romantic-piano-112194.mp3';
+          audioRef.current = new Audio(musicUrl);
+          audioRef.current.loop = true;
+          audioRef.current.volume = 0; // Start at 0 for fade-in
+
+          const userPreference = localStorage.getItem('musicPreference');
+          if (userPreference !== 'muted') {
+            const playPromise = audioRef.current.play();
+            if (playPromise !== undefined) {
+              playPromise.then(() => {
+                setIsPlaying(true);
+                fadeIn();
+              }).catch(() => {
+                // Autoplay blocked
+                setShowMusicOverlay(true);
+              });
+            }
+          }
+        }
       }
     }
+    
+    const fadeIn = () => {
+      let vol = 0;
+      const interval = setInterval(() => {
+        if (vol < 0.5 && audioRef.current) {
+          vol += 0.05;
+          audioRef.current.volume = Math.min(vol, 0.5);
+        } else {
+          clearInterval(interval);
+        }
+      }, 200);
+    };
     async function fetchCustomPages() {
       const { data } = await supabase.from('pages').select('title, slug').order('created_at', { ascending: true });
       if (data) {
@@ -171,10 +211,24 @@ export default function Layout() {
     if (audioRef.current && settings?.music_enabled !== false) {
       if (isPlaying) {
         audioRef.current.pause();
+        localStorage.setItem('musicPreference', 'muted');
       } else {
+        audioRef.current.volume = 0.5; // restore normal volume
         audioRef.current.play().catch(e => console.log('Audio play failed:', e));
+        localStorage.setItem('musicPreference', 'playing');
       }
       setIsPlaying(!isPlaying);
+    }
+  };
+
+  const handleEnableMusic = () => {
+    setShowMusicOverlay(false);
+    if (audioRef.current) {
+      audioRef.current.volume = 0.5;
+      audioRef.current.play().then(() => {
+        setIsPlaying(true);
+        localStorage.setItem('musicPreference', 'playing');
+      }).catch(e => console.log('Audio play failed:', e));
     }
   };
 
@@ -205,8 +259,33 @@ export default function Layout() {
     }
   }, [settings]);
 
+  useEffect(() => {
+    const updateNavbarHeight = () => {
+      const header = document.querySelector('header');
+      if (header) {
+        document.documentElement.style.setProperty('--navbar-height', `${header.offsetHeight}px`);
+      }
+    };
+
+    updateNavbarHeight();
+    window.addEventListener('resize', updateNavbarHeight);
+    
+    // Use ResizeObserver for more robust tracking of header height changes (e.g. logo loading)
+    const observer = new ResizeObserver(() => updateNavbarHeight());
+    const header = document.querySelector('header');
+    if (header) {
+      observer.observe(header);
+    }
+
+    return () => {
+      window.removeEventListener('resize', updateNavbarHeight);
+      observer.disconnect();
+    };
+  }, [settings?.navbar_template, settings?.logo_size, settings?.logo_url]);
+
   const SelectedNavbar = navbars[settings?.navbar_template || 'navbar1'] || Navbar1;
 
+  // Render logic continues...
   return (
     <div className={`min-h-screen flex flex-col ${fontClass}`}>
       <SelectedNavbar 
@@ -220,6 +299,36 @@ export default function Layout() {
         customPages={customPages}
       />
 
+      <AnimatePresence>
+        {showMusicOverlay && (
+          <motion.div 
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            className="fixed bottom-24 left-1/2 transform -translate-x-1/2 z-50 bg-black/80 backdrop-blur-md text-white px-6 py-3 rounded-full flex items-center gap-4 shadow-xl border border-white/10"
+          >
+            <span className="text-sm tracking-widest uppercase font-medium">Tap to Play Music</span>
+            <div className="flex gap-2">
+              <button 
+                onClick={handleEnableMusic}
+                className="bg-white text-black px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-gray-200 transition-colors"
+              >
+                Play
+              </button>
+              <button 
+                onClick={() => {
+                  setShowMusicOverlay(false);
+                  localStorage.setItem('musicPreference', 'muted');
+                }}
+                className="bg-white/20 text-white px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-white/30 transition-colors"
+              >
+                Mute
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Mobile Nav */}
       <AnimatePresence>
         {isMenuOpen && (
@@ -227,49 +336,51 @@ export default function Layout() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="fixed inset-0 z-40 pt-24 px-4 md:hidden"
+            className="fixed inset-0 z-40 md:hidden flex flex-col"
             style={{ backgroundColor: settings?.navbar_bg_color || "var(--brand-bg, #F5E9DA)" }}
           >
-            <nav className="flex flex-col space-y-6 text-center">
-              {navLinks.map((link) => (
-                link.dropdown ? (
+            <div className="flex-1 overflow-y-auto overflow-x-hidden pt-28 pb-12 px-6">
+              <nav className="flex flex-col space-y-8 text-center min-h-full items-center justify-center">
+                {navLinks.map((link) => (
+                  link.dropdown ? (
+                    <MobileAccordion 
+                      key={link.name} 
+                      title={link.name} 
+                      items={link.dropdown} 
+                      onLinkClick={() => setIsMenuOpen(false)} 
+                      textColor={settings?.navbar_text_color || "var(--brand-primary, #1F3A5F)"} 
+                      location={location} 
+                    />
+                  ) : (
+                    <Link
+                      key={link.name}
+                      to={link.path!}
+                      onClick={() => setIsMenuOpen(false)}
+                      className={`font-serif text-3xl transition-colors hover:opacity-70 ${
+                        location.pathname === link.path ? 'font-bold' : ''
+                      }`}
+                      style={{ color: settings?.navbar_text_color || "var(--brand-primary, #1F3A5F)" }}
+                    >
+                      {link.name}
+                    </Link>
+                  )
+                ))}
+                {customPages.length > 0 && (
                   <MobileAccordion 
-                    key={link.name} 
-                    title={link.name} 
-                    items={link.dropdown} 
+                    title="More" 
+                    items={customPages.map(page => ({ title: page.title, path: '/' + page.slug }))}
                     onLinkClick={() => setIsMenuOpen(false)} 
                     textColor={settings?.navbar_text_color || "var(--brand-primary, #1F3A5F)"} 
                     location={location} 
                   />
-                ) : (
-                  <Link
-                    key={link.name}
-                    to={link.path!}
-                    onClick={() => setIsMenuOpen(false)}
-                    className={`font-serif text-3xl transition-colors hover:opacity-70 ${
-                      location.pathname === link.path ? 'font-bold' : ''
-                    }`}
-                    style={{ color: settings?.navbar_text_color || "var(--brand-primary, #1F3A5F)" }}
-                  >
-                    {link.name}
-                  </Link>
-                )
-              ))}
-              {customPages.length > 0 && (
-                <MobileAccordion 
-                  title="More" 
-                  items={customPages.map(page => ({ title: page.title, path: '/' + page.slug }))}
-                  onLinkClick={() => setIsMenuOpen(false)} 
-                  textColor={settings?.navbar_text_color || "var(--brand-primary, #1F3A5F)"} 
-                  location={location} 
-                />
-              )}
-            </nav>
+                )}
+              </nav>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      <main className="flex-grow pt-20">
+      <main className="flex-grow flex flex-col" style={{ paddingTop: 'var(--navbar-height, 80px)' }}>
         <AnimatePresence mode="wait">
           <motion.div
             key={location.pathname}
@@ -277,7 +388,7 @@ export default function Layout() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -15 }}
             transition={{ duration: 0.4, ease: "easeInOut" }}
-            className="min-h-[calc(100vh-16rem)]"
+            className="flex-grow flex flex-col"
           >
             <Outlet context={{ settings }} />
           </motion.div>
