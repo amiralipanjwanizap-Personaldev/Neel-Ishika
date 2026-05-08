@@ -48,24 +48,30 @@ export const Navbar5 = ({
           {/* Links as Buttons */}
           <nav className="hidden md:flex space-x-4 items-center">
             {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                to={link.path}
-                className={`px-5 py-2 rounded-full text-xs tracking-widest uppercase transition-all duration-300 ${
-                  location.pathname === link.path 
-                    ? 'font-bold' 
-                    : 'hover:opacity-80'
-                }`}
-                style={{
-                  backgroundColor: location.pathname === link.path ? accentColor : "rgba(var(--brand-secondary-rgb, 201, 164, 108), 0.1)",
-                  color: location.pathname === link.path ? "#FFFFFF" : "inherit"
-                }}
-              >
-                {link.name}
-              </Link>
+              link.dropdown ? (
+                <div key={link.name} className={`px-5 py-2 rounded-full transition-all duration-300 hover:opacity-80`} style={{ backgroundColor: "rgba(var(--brand-secondary-rgb, 201, 164, 108), 0.1)" }}>
+                  <NavDropdown title={link.name} items={link.dropdown} location={location} styleClass="text-xs tracking-widest uppercase" />
+                </div>
+              ) : (
+                <Link
+                  key={link.name}
+                  to={link.path!}
+                  className={`px-5 py-2 rounded-full text-xs tracking-widest uppercase transition-all duration-300 ${
+                    location.pathname === link.path 
+                      ? 'font-bold' 
+                      : 'hover:opacity-80'
+                  }`}
+                  style={{
+                    backgroundColor: location.pathname === link.path ? accentColor : "rgba(var(--brand-secondary-rgb, 201, 164, 108), 0.1)",
+                    color: location.pathname === link.path ? "#FFFFFF" : "inherit"
+                  }}
+                >
+                  {link.name}
+                </Link>
+              )
             ))}
             <div className={`px-5 py-2 rounded-full transition-all duration-300 hover:opacity-80`} style={{ backgroundColor: "rgba(var(--brand-secondary-rgb, 201, 164, 108), 0.1)" }}>
-              <NavDropdown items={customPages || []} location={location} styleClass="text-xs tracking-widest uppercase" />
+              <NavDropdown title="More" items={(customPages || []).map(p => ({ title: p.title, path: '/' + p.slug }))} location={location} styleClass="text-xs tracking-widest uppercase" />
             </div>
             {settings?.music_enabled !== false && (
               <button 

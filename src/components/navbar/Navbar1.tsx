@@ -6,7 +6,7 @@ import { NavDropdown } from './NavDropdown';
 
 export interface NavbarProps {
   settings: any;
-  navLinks: { name: string; path: string }[];
+  navLinks: { name: string; path?: string; dropdown?: { title: string; path: string }[] }[];
   location: { pathname: string };
   isMenuOpen: boolean;
   setIsMenuOpen: (open: boolean) => void;
@@ -59,17 +59,21 @@ export const Navbar1 = ({
           {/* Links Spaced Evenly */}
           <nav className="hidden md:flex space-x-12 items-center">
             {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                to={link.path}
-                className={`text-xs tracking-[0.2em] uppercase transition-all hover:opacity-70 ${
-                  location.pathname === link.path ? 'font-bold border-b border-current' : ''
-                }`}
-              >
-                {link.name}
-              </Link>
+              link.dropdown ? (
+                <NavDropdown key={link.name} title={link.name} items={link.dropdown} location={location} styleClass="text-xs tracking-[0.2em] uppercase" />
+              ) : (
+                <Link
+                  key={link.name}
+                  to={link.path!}
+                  className={`text-xs tracking-[0.2em] uppercase transition-all hover:opacity-70 ${
+                    location.pathname === link.path ? 'font-bold border-b border-current' : ''
+                  }`}
+                >
+                  {link.name}
+                </Link>
+              )
             ))}
-            <NavDropdown items={customPages || []} location={location} styleClass="text-xs tracking-[0.2em] uppercase" />
+            <NavDropdown title="More" items={(customPages || []).map(p => ({ title: p.title, path: '/' + p.slug }))} location={location} styleClass="text-xs tracking-[0.2em] uppercase" />
             {settings?.music_enabled !== false && (
               <button 
                 onClick={toggleMusic}

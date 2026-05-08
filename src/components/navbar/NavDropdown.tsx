@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
-export const NavDropdown = ({ items, location, styleClass = "text-xs tracking-widest uppercase" }: { items: { title: string; slug: string }[], location: any, styleClass?: string }) => {
+export const NavDropdown = ({ title = "More", items, location, styleClass = "text-xs tracking-widest uppercase" }: { title?: string, items: { title: string; path: string }[], location: any, styleClass?: string }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   if (!items || items.length === 0) return null;
@@ -19,7 +19,7 @@ export const NavDropdown = ({ items, location, styleClass = "text-xs tracking-wi
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
       >
-        More <ChevronDown size={14} className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        {title} <ChevronDown size={14} className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
       <AnimatePresence>
         {isOpen && (
@@ -40,10 +40,10 @@ export const NavDropdown = ({ items, location, styleClass = "text-xs tracking-wi
               >
                 {items.map((item) => (
                   <Link
-                    key={item.slug}
-                    to={`/${item.slug}`}
+                    key={item.path}
+                    to={item.path}
                     className={`block px-4 py-3 text-sm transition-colors hover:bg-black/5 ${
-                      location.pathname === `/${item.slug}` ? 'font-bold' : ''
+                      location.pathname === item.path ? 'font-bold' : ''
                     }`}
                     onClick={() => setIsOpen(false)}
                   >

@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { Lock } from 'lucide-react';
+import { Lock, ChevronDown } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { getSettings } from '../lib/api';
@@ -13,16 +13,66 @@ import { Navbar5 } from './navbar/Navbar5';
 const navLinks = [
   { name: 'Home', path: '/' },
   { name: 'Schedule', path: '/schedule' },
-  { name: 'Travel', path: '/travel' },
-  { name: 'Accommodation', path: '/accommodation' },
-  { name: 'Explore', path: '/explore' },
-  { name: 'Requirements', path: '/special-requirements' },
-  { name: 'Gallery', path: '/gallery' },
-  { name: 'Story', path: '/story' },
-  { name: 'Beauty', path: '/beauty' },
-  { name: 'Challenge', path: '/games/photo-challenge' },
-  { name: 'Messages', path: '/games/message-wall' },
+  { 
+    name: 'Travel', 
+    dropdown: [
+      { title: 'Requirements', path: '/special-requirements' },
+      { title: 'Explore', path: '/explore' },
+      { title: 'Accommodation', path: '/accommodation' },
+    ]
+  },
+  { 
+    name: 'Wedding', 
+    dropdown: [
+      { title: 'Story', path: '/story' },
+      { title: 'Beauty', path: '/beauty' },
+      { title: 'Messages', path: '/games/message-wall' },
+      { title: 'Challenge', path: '/games/photo-challenge' },
+      { title: 'Gallery', path: '/gallery' },
+    ]
+  },
 ];
+
+const MobileAccordion = ({ title, items, onLinkClick, textColor, location }: any) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const isActive = items.some((i: any) => location.pathname === i.path);
+
+  return (
+    <div className="flex flex-col items-center">
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        className={`font-serif text-3xl transition-colors hover:opacity-70 flex items-center justify-center gap-2 ${isActive ? 'font-bold' : ''}`}
+        style={{ color: textColor }}
+      >
+        {title} <ChevronDown size={24} className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="flex flex-col space-y-4 mt-4 overflow-hidden"
+          >
+            {items.map((item: any) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                onClick={onLinkClick}
+                className={`font-serif text-xl transition-colors hover:opacity-70 bg-black/5 rounded-full px-6 py-2 ${
+                  location.pathname === item.path ? 'font-bold bg-black/10' : ''
+                }`}
+                style={{ color: textColor }}
+              >
+                {item.title}
+              </Link>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
 
 interface Settings {
   logo_url?: string;
@@ -181,31 +231,38 @@ export default function Layout() {
           >
             <nav className="flex flex-col space-y-6 text-center">
               {navLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  to={link.path}
-                  onClick={() => setIsMenuOpen(false)}
-                  className={`font-serif text-3xl transition-colors hover:opacity-70 ${
-                    location.pathname === link.path ? 'font-bold' : ''
-                  }`}
-                  style={{ color: settings?.navbar_text_color || "var(--brand-primary, #1F3A5F)" }}
-                >
-                  {link.name}
-                </Link>
+                link.dropdown ? (
+                  <MobileAccordion 
+                    key={link.name} 
+                    title={link.name} 
+                    items={link.dropdown} 
+                    onLinkClick={() => setIsMenuOpen(false)} 
+                    textColor={settings?.navbar_text_color || "var(--brand-primary, #1F3A5F)"} 
+                    location={location} 
+                  />
+                ) : (
+                  <Link
+                    key={link.name}
+                    to={link.path!}
+                    onClick={() => setIsMenuOpen(false)}
+                    className={`font-serif text-3xl transition-colors hover:opacity-70 ${
+                      location.pathname === link.path ? 'font-bold' : ''
+                    }`}
+                    style={{ color: settings?.navbar_text_color || "var(--brand-primary, #1F3A5F)" }}
+                  >
+                    {link.name}
+                  </Link>
+                )
               ))}
-              {customPages.map((page) => (
-                <Link
-                  key={page.slug}
-                  to={`/${page.slug}`}
-                  onClick={() => setIsMenuOpen(false)}
-                  className={`font-serif text-3xl transition-colors hover:opacity-70 ${
-                    location.pathname === `/${page.slug}` ? 'font-bold' : ''
-                  }`}
-                  style={{ color: settings?.navbar_text_color || "var(--brand-primary, #1F3A5F)" }}
-                >
-                  {page.title}
-                </Link>
-              ))}
+              {customPages.length > 0 && (
+                <MobileAccordion 
+                  title="More" 
+                  items={customPages.map(page => ({ title: page.title, path: '/' + page.slug }))}
+                  onLinkClick={() => setIsMenuOpen(false)} 
+                  textColor={settings?.navbar_text_color || "var(--brand-primary, #1F3A5F)"} 
+                  location={location} 
+                />
+              )}
             </nav>
           </motion.div>
         )}
