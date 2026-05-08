@@ -16,6 +16,7 @@ import Explore from './pages/Explore';
 import Beauty from './pages/Beauty';
 import PhotoChallenge from './pages/PhotoChallenge';
 import MessageWall from './pages/MessageWall';
+import ImportantContacts from './pages/ImportantContacts';
 import DynamicPage from './pages/DynamicPage';
 import AdminLayout from './components/AdminLayout';
 import Login from './pages/admin/Login';
@@ -37,6 +38,7 @@ export default function App() {
           <Route path="gallery" element={<Gallery />} />
           <Route path="story" element={<Story />} />
           <Route path="beauty" element={<Beauty />} />
+          <Route path="important-contacts" element={<ImportantContacts />} />
           <Route path="games/photo-challenge" element={<PhotoChallenge />} />
           <Route path="games/message-wall" element={<MessageWall />} />
           <Route path=":slug" element={<DynamicPage />} />
