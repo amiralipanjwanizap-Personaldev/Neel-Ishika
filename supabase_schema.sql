@@ -47,3 +47,22 @@ CREATE POLICY "Allow authenticated users to manage rsvps"
 
 -- Enable realtime for rsvps table
 alter publication supabase_realtime add table rsvps;
+
+-- Create page_views table
+CREATE TABLE public.page_views (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    visitor_id TEXT NOT NULL,
+    path TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- Set up Row Level Security (RLS) for page_views
+ALTER TABLE public.page_views ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow public insert access on page_views"
+    ON public.page_views FOR INSERT
+    WITH CHECK (true);
+
+CREATE POLICY "Allow authenticated users to read page_views"
+    ON public.page_views FOR SELECT
+    USING (auth.role() = 'authenticated');

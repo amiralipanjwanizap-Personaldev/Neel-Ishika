@@ -208,6 +208,42 @@ export default function Layout() {
     };
   }, []);
 
+  useEffect(() => {
+    // Visitor Tracking System
+    if (location.pathname.startsWith('/admin')) return;
+
+    const recordVisit = async () => {
+      let visitorId = localStorage.getItem('visitor_id');
+      if (!visitorId) {
+        visitorId = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15);
+        localStorage.setItem('visitor_id', visitorId);
+      }
+
+      const lastVisitKey = 'last_visit_timestamp';
+      const lastVisit = localStorage.getItem(lastVisitKey);
+      const now = Date.now();
+      const thirtyMinutes = 30 * 60 * 1000;
+
+      // Only count one visit every 30 minutes per visitor
+      if (!lastVisit || now - parseInt(lastVisit) > thirtyMinutes) {
+        try {
+          const { error } = await supabase.from('page_views').insert([{
+            visitor_id: visitorId,
+            path: location.pathname
+          }]);
+          
+          if (!error) {
+            localStorage.setItem(lastVisitKey, now.toString());
+          }
+        } catch (e) {
+          console.error("Error tracking view", e);
+        }
+      }
+    };
+
+    recordVisit();
+  }, [location.pathname]);
+
   const toggleMusic = () => {
     if (audioRef.current && settings?.music_enabled !== false) {
       if (isPlaying) {

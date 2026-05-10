@@ -425,24 +425,29 @@ export default function Dashboard() {
         .select('*', { count: 'exact', head: true })
         .gte('created_at', twentyFourHoursAgo);
 
-      // 3. Website View Stats (Fake/Static for now, fallback if no page_views table)
+      // 3. Website View Stats
       let totalVisits = 0;
       let uniqueVisitors = 0;
       let dailyViews = 0;
       
       try {
-        const { count: totalV } = await supabase.from('page_views').select('*', { count: 'exact', head: true });
-        const { data: uniqueV } = await supabase.from('page_views').select('ip_address, created_at'); // Need some distinct if existed
+        const { count: totalV, error: countErr } = await supabase.from('page_views').select('*', { count: 'exact', head: true });
+        if (countErr) throw countErr;
+        
+        const { data: uniqueV, error: dataErr } = await supabase.from('page_views').select('visitor_id, created_at');
+        if (dataErr) throw dataErr;
+        
         if (totalV !== null) totalVisits = totalV;
         if (uniqueV) {
-          uniqueVisitors = new Set(uniqueV.map(v => v.ip_address)).size;
+          uniqueVisitors = new Set(uniqueV.map(v => v.visitor_id)).size;
           dailyViews = uniqueV.filter(v => new Date(v.created_at) > new Date(twentyFourHoursAgo)).length;
         }
       } catch (err) {
-        // Fallback for simple implementation
-        totalVisits = 1342;
-        uniqueVisitors = 890;
-        dailyViews = 45;
+        console.error("Error fetching page views:", err);
+        // Fallback for simple implementation if table doesn't exist yet
+        totalVisits = 0;
+        uniqueVisitors = 0;
+        dailyViews = 0;
       }
 
       setAnalytics({
