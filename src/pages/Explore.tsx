@@ -148,13 +148,25 @@ export default function Explore() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {content[activeTab].hotels.map((hotel, i) => (
                 <div key={i} className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-between group">
-                  <div>
+                  <div className="mb-6">
                     <div className="flex justify-between items-start mb-2">
                       <h3 className="text-xl font-serif transition-colors group-hover:text-brand-gold" style={{ color: "var(--brand-primary, #1F3A5F)" }}>{hotel.name}</h3>
                       {hotel.recommended && <Star size={16} className="text-brand-gold fill-brand-gold flex-shrink-0 ml-2 mt-1" />}
                     </div>
                     <p className="text-sm tracking-widest uppercase mb-4" style={{ color: "var(--brand-secondary, #C9A46C)" }}>{hotel.area}</p>
                     <p className="text-gray-600 text-base leading-relaxed">{hotel.desc}</p>
+                  </div>
+                  <div className="flex flex-wrap gap-4 mt-auto">
+                    <a
+                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${hotel.name} ${hotel.area.includes('Recommended') || hotel.area.includes('Featured') ? '' : hotel.area} ${activeTab} Tanzania`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-full border transition-colors hover:bg-gray-50 font-medium text-sm"
+                      style={{ borderColor: '#E5E7EB', color: "var(--brand-primary, #1F3A5F)" }}
+                    >
+                      <MapPin size={16} />
+                      <span>View on Maps</span>
+                    </a>
                   </div>
                 </div>
               ))}
@@ -172,7 +184,7 @@ export default function Explore() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {content[activeTab].restaurants.map((rest, i) => (
                 <div key={i} className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-between group">
-                  <div>
+                  <div className="mb-6">
                     <h3 className="text-xl font-serif transition-colors group-hover:text-brand-gold mb-2" style={{ color: "var(--brand-primary, #1F3A5F)" }}>{rest.name}</h3>
                     <div className="flex items-center gap-2 mb-4">
                       <p className="text-sm tracking-widest uppercase" style={{ color: "var(--brand-secondary, #C9A46C)" }}>{rest.area}</p>
@@ -180,6 +192,18 @@ export default function Explore() {
                       <p className="text-sm text-gray-500">{rest.type}</p>
                     </div>
                     <p className="text-gray-600 text-base leading-relaxed">{rest.desc}</p>
+                  </div>
+                  <div className="flex flex-wrap gap-4 mt-auto">
+                    <a
+                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${rest.name} ${rest.area} ${activeTab} Tanzania`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-full border transition-colors hover:bg-gray-50 font-medium text-sm"
+                      style={{ borderColor: '#E5E7EB', color: "var(--brand-primary, #1F3A5F)" }}
+                    >
+                      <MapPin size={16} />
+                      <span>View on Maps</span>
+                    </a>
                   </div>
                 </div>
               ))}
@@ -196,12 +220,26 @@ export default function Explore() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {content[activeTab].activities.map((act, i) => (
-                <div key={i} className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 flex flex-col group hover:-translate-y-1 transition-all duration-300">
-                  <div className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center mb-6 text-2xl border border-gray-100 group-hover:border-gray-200 transition-colors">
-                    {act.icon}
+                <div key={i} className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-between group hover:-translate-y-1 transition-all duration-300">
+                  <div className="mb-6">
+                    <div className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center mb-6 text-2xl border border-gray-100 group-hover:border-gray-200 transition-colors">
+                      {act.icon}
+                    </div>
+                    <h3 className="text-xl font-serif mb-3" style={{ color: "var(--brand-primary, #1F3A5F)" }}>{act.name}</h3>
+                    <p className="text-gray-600 text-base leading-relaxed">{act.desc}</p>
                   </div>
-                  <h3 className="text-xl font-serif mb-3" style={{ color: "var(--brand-primary, #1F3A5F)" }}>{act.name}</h3>
-                  <p className="text-gray-600 text-base leading-relaxed">{act.desc}</p>
+                  <div className="flex flex-wrap gap-4 mt-auto">
+                    <a
+                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${act.name} ${activeTab} Tanzania`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-full border transition-colors hover:bg-gray-50 font-medium text-sm"
+                      style={{ borderColor: '#E5E7EB', color: "var(--brand-primary, #1F3A5F)" }}
+                    >
+                      <MapPin size={16} />
+                      <span>View on Maps</span>
+                    </a>
+                  </div>
                 </div>
               ))}
             </div>
