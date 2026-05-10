@@ -14,7 +14,7 @@ export default function Accommodation() {
         </span>
         <h1 className="text-4xl md:text-6xl font-serif text-brand-navy mb-6">Accommodation</h1>
         <p className="text-brand-navy/60 max-w-2xl mx-auto text-lg leading-relaxed">
-          Information regarding your stay at the Sea Cliff Resort & Spa.
+          Information regarding your stay in Zanzibar.
         </p>
       </motion.div>
 
@@ -58,7 +58,7 @@ export default function Accommodation() {
           <div className="bg-brand-navy/5 p-4 rounded-xl mb-6 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="text-center sm:text-left">
               <p className="text-xs uppercase tracking-widest text-brand-navy/50 font-bold mb-1">Discount Code</p>
-              <p className="text-2xl font-mono text-brand-gold font-bold">NEELISHK26</p>
+              <p className="text-2xl font-mono text-brand-gold font-bold">Ishika&amp;Neel-21Aug2026</p>
             </div>
           </div>
           <p className="text-sm text-brand-navy/60 italic mb-2">To book additional nights at our corporate rate, please contact:</p>
