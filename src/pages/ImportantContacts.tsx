@@ -1,8 +1,16 @@
 import { motion } from 'motion/react';
-import { Phone, MessageCircle } from 'lucide-react';
+import { Phone, MessageCircle, Mail } from 'lucide-react';
 import { useOutletContext } from 'react-router-dom';
 
 const contacts = [
+  {
+    name: "Neel",
+    role: "Wedding Contact",
+    phoneDisplay: "+265 995 134 351",
+    phoneUrl: "tel:+265995134351",
+    whatsappUrl: "https://wa.me/265995134351",
+    emailUrl: "mailto:neelsavjani@gmail.com"
+  },
   {
     name: "Sea Cliff Resort & Spa",
     role: "Wedding Resort",
@@ -38,7 +46,7 @@ export default function ImportantContacts() {
   const accentColor = settings?.accent_color || "var(--brand-secondary, #C9A46C)";
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] py-24 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen py-24 px-4 sm:px-6 lg:px-8" style={{ backgroundColor: "var(--brand-bg, #F5E9DA)" }}>
       <div className="max-w-4xl mx-auto space-y-16">
         {/* Header Section */}
         <motion.div
@@ -47,7 +55,7 @@ export default function ImportantContacts() {
           transition={{ duration: 0.8 }}
           className="text-center space-y-6"
         >
-          <h1 className="text-5xl md:text-6xl font-serif text-[#1F3A5F]">Important Contacts</h1>
+          <h1 className="text-5xl md:text-6xl font-serif" style={{ color: "var(--brand-primary, #1F3A5F)" }}>Important Contacts</h1>
           <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
             Should you require any assistance during the wedding celebrations, please feel free to contact the following.
           </p>
@@ -87,15 +95,15 @@ export default function ImportantContacts() {
               className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-between"
             >
               <div className="mb-8">
-                <h3 className="text-2xl font-serif text-[#1F3A5F] mb-2">{contact.name}</h3>
+                <h3 className="text-2xl font-serif mb-2" style={{ color: "var(--brand-primary, #1F3A5F)" }}>{contact.name}</h3>
                 <p className="text-sm tracking-widest uppercase" style={{ color: accentColor }}>{contact.role}</p>
                 <p className="text-gray-600 mt-4 text-lg">{contact.phoneDisplay}</p>
               </div>
-              <div className="flex gap-4">
+              <div className="flex flex-wrap gap-4">
                 <a
                   href={contact.phoneUrl}
-                  className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-full border transition-colors hover:bg-gray-50 font-medium text-sm text-[#1F3A5F]"
-                  style={{ borderColor: '#E5E7EB' }}
+                  className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-full border transition-colors hover:bg-gray-50 font-medium text-sm"
+                  style={{ borderColor: '#E5E7EB', color: "var(--brand-primary, #1F3A5F)" }}
                 >
                   <Phone size={16} />
                   <span>Call</span>
@@ -110,6 +118,16 @@ export default function ImportantContacts() {
                   <MessageCircle size={16} />
                   <span>WhatsApp</span>
                 </a>
+                {contact.emailUrl && (
+                  <a
+                    href={contact.emailUrl}
+                    className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-full text-white transition-opacity hover:opacity-90 font-medium text-sm"
+                    style={{ backgroundColor: "var(--brand-primary, #1F3A5F)" }}
+                  >
+                    <Mail size={16} />
+                    <span>Email</span>
+                  </a>
+                )}
               </div>
             </motion.div>
           ))}
