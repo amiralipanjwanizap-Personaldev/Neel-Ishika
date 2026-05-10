@@ -86,39 +86,42 @@ export default function Explore() {
   ];
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-16 md:py-24">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-center mb-16"
-      >
-        <span className="inline-block px-4 py-1.5 bg-brand-gold/10 text-brand-gold text-xs font-bold tracking-[0.2em] uppercase rounded-full mb-6">
-          Pre & Post Wedding
-        </span>
-        <h1 className="text-4xl md:text-6xl font-serif text-brand-navy mb-6">Explore Tanzania</h1>
-        <p className="text-brand-navy/60 max-w-2xl mx-auto text-lg leading-relaxed">
-          {activeTab === 'dar' 
-            ? "Traffic in Dar es Salaam can get busy during peak times. We recommend planning your travel accordingly."
-            : "Whichever you choose, we’re sure you’ll have an unforgettable experience on this beautiful island."}
-        </p>
-      </motion.div>
+    <div className="min-h-screen py-24 px-4 sm:px-6 lg:px-8" style={{ backgroundColor: "var(--brand-bg, #F5E9DA)" }}>
+      <div className="max-w-6xl mx-auto space-y-16">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center"
+        >
+          <span className="inline-block px-4 py-1.5 bg-brand-gold/10 text-brand-gold text-xs font-bold tracking-widest uppercase rounded-full mb-6">
+            Pre & Post Wedding
+          </span>
+          <h1 className="text-5xl md:text-6xl font-serif mb-6" style={{ color: "var(--brand-primary, #1F3A5F)" }}>Explore Tanzania</h1>
+          <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
+            {activeTab === 'dar' 
+              ? "Traffic in Dar es Salaam can get busy during peak times. We recommend planning your travel accordingly."
+              : "Whichever you choose, we’re sure you’ll have an unforgettable experience on this beautiful island."}
+          </p>
+        </motion.div>
 
       {/* Tabs */}
       <div className="flex justify-center mb-12">
         <div className="inline-flex bg-white rounded-full p-1 border border-brand-navy/10 shadow-sm">
           <button
             onClick={() => setActiveTab('zanzibar')}
-            className={`px-8 py-3 rounded-full text-sm font-bold uppercase tracking-wider transition-all duration-300 ${
-              activeTab === 'zanzibar' ? 'bg-brand-navy text-white shadow-md' : 'text-brand-navy/60 hover:text-brand-navy'
+            className={`px-8 py-3 rounded-full text-sm font-bold uppercase tracking-widest transition-all duration-300 ${
+              activeTab === 'zanzibar' ? 'text-white shadow-md' : 'text-gray-500 hover:text-gray-800'
             }`}
+            style={activeTab === 'zanzibar' ? { backgroundColor: "var(--brand-primary, #1F3A5F)" } : {}}
           >
             Zanzibar
           </button>
           <button
             onClick={() => setActiveTab('dar')}
-            className={`px-8 py-3 rounded-full text-sm font-bold uppercase tracking-wider transition-all duration-300 ${
-              activeTab === 'dar' ? 'bg-brand-navy text-white shadow-md' : 'text-brand-navy/60 hover:text-brand-navy'
+            className={`px-8 py-3 rounded-full text-sm font-bold uppercase tracking-widest transition-all duration-300 ${
+              activeTab === 'dar' ? 'text-white shadow-md' : 'text-gray-500 hover:text-gray-800'
             }`}
+             style={activeTab === 'dar' ? { backgroundColor: "var(--brand-primary, #1F3A5F)" } : {}}
           >
             Dar es Salaam
           </button>
@@ -137,20 +140,22 @@ export default function Explore() {
           {/* Hotels */}
           <section>
             <div className="flex items-center gap-3 mb-8">
-              <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full bg-white text-gray-500 shadow-sm border border-gray-100 flex items-center justify-center">
                 <MapPin size={20} />
               </div>
-              <h2 className="text-3xl font-serif text-brand-navy">Where to Stay</h2>
+              <h2 className="text-3xl font-serif" style={{ color: "var(--brand-primary, #1F3A5F)" }}>Where to Stay</h2>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {content[activeTab].hotels.map((hotel, i) => (
-                <div key={i} className="bg-white p-6 rounded-2xl border border-brand-navy/5 shadow-sm hover:shadow-md transition-shadow group">
-                  <div className="flex justify-between items-start mb-3">
-                    <h3 className="text-lg font-bold text-brand-navy group-hover:text-brand-gold transition-colors">{hotel.name}</h3>
-                    {hotel.recommended && <Star size={16} className="text-brand-gold fill-brand-gold" />}
+                <div key={i} className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-between group">
+                  <div>
+                    <div className="flex justify-between items-start mb-2">
+                      <h3 className="text-xl font-serif transition-colors group-hover:text-brand-gold" style={{ color: "var(--brand-primary, #1F3A5F)" }}>{hotel.name}</h3>
+                      {hotel.recommended && <Star size={16} className="text-brand-gold fill-brand-gold flex-shrink-0 ml-2 mt-1" />}
+                    </div>
+                    <p className="text-sm tracking-widest uppercase mb-4" style={{ color: "var(--brand-secondary, #C9A46C)" }}>{hotel.area}</p>
+                    <p className="text-gray-600 text-base leading-relaxed">{hotel.desc}</p>
                   </div>
-                  <p className="text-xs font-bold uppercase tracking-wider text-brand-navy/40 mb-3">{hotel.area}</p>
-                  <p className="text-sm text-brand-navy/70 leading-relaxed">{hotel.desc}</p>
                 </div>
               ))}
             </div>
@@ -159,21 +164,23 @@ export default function Explore() {
           {/* Restaurants */}
           <section>
             <div className="flex items-center gap-3 mb-8">
-              <div className="w-10 h-10 rounded-full bg-orange-50 text-orange-600 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full bg-white text-gray-500 shadow-sm border border-gray-100 flex items-center justify-center">
                 <Utensils size={20} />
               </div>
-              <h2 className="text-3xl font-serif text-brand-navy">Where to Eat</h2>
+              <h2 className="text-3xl font-serif" style={{ color: "var(--brand-primary, #1F3A5F)" }}>Where to Eat</h2>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {content[activeTab].restaurants.map((rest, i) => (
-                <div key={i} className="bg-white p-6 rounded-2xl border border-brand-navy/5 shadow-sm hover:shadow-md transition-shadow group">
-                  <h3 className="text-lg font-bold text-brand-navy group-hover:text-brand-gold transition-colors mb-1">{rest.name}</h3>
-                  <div className="flex items-center gap-2 mb-3">
-                    <p className="text-xs font-bold uppercase tracking-wider text-brand-navy/40">{rest.area}</p>
-                    <span className="w-1 h-1 rounded-full bg-brand-navy/20"></span>
-                    <p className="text-xs text-brand-gold">{rest.type}</p>
+                <div key={i} className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-between group">
+                  <div>
+                    <h3 className="text-xl font-serif transition-colors group-hover:text-brand-gold mb-2" style={{ color: "var(--brand-primary, #1F3A5F)" }}>{rest.name}</h3>
+                    <div className="flex items-center gap-2 mb-4">
+                      <p className="text-sm tracking-widest uppercase" style={{ color: "var(--brand-secondary, #C9A46C)" }}>{rest.area}</p>
+                      <span className="w-1 h-1 rounded-full bg-gray-300"></span>
+                      <p className="text-sm text-gray-500">{rest.type}</p>
+                    </div>
+                    <p className="text-gray-600 text-base leading-relaxed">{rest.desc}</p>
                   </div>
-                  <p className="text-sm text-brand-navy/70 leading-relaxed">{rest.desc}</p>
                 </div>
               ))}
             </div>
@@ -182,19 +189,19 @@ export default function Explore() {
           {/* Activities */}
           <section>
             <div className="flex items-center gap-3 mb-8">
-              <div className="w-10 h-10 rounded-full bg-green-50 text-green-600 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full bg-white text-gray-500 shadow-sm border border-gray-100 flex items-center justify-center">
                 <Navigation size={20} />
               </div>
-              <h2 className="text-3xl font-serif text-brand-navy">Things to Do</h2>
+              <h2 className="text-3xl font-serif" style={{ color: "var(--brand-primary, #1F3A5F)" }}>Things to Do</h2>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {content[activeTab].activities.map((act, i) => (
-                <div key={i} className="bg-white p-6 rounded-2xl border border-brand-navy/5 shadow-sm hover:-translate-y-1 transition-all duration-300">
-                  <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center mb-4 text-xl">
+                <div key={i} className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 flex flex-col group hover:-translate-y-1 transition-all duration-300">
+                  <div className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center mb-6 text-2xl border border-gray-100 group-hover:border-gray-200 transition-colors">
                     {act.icon}
                   </div>
-                  <h3 className="font-bold text-brand-navy mb-2">{act.name}</h3>
-                  <p className="text-sm text-brand-navy/60 leading-relaxed">{act.desc}</p>
+                  <h3 className="text-xl font-serif mb-3" style={{ color: "var(--brand-primary, #1F3A5F)" }}>{act.name}</h3>
+                  <p className="text-gray-600 text-base leading-relaxed">{act.desc}</p>
                 </div>
               ))}
             </div>
@@ -202,37 +209,43 @@ export default function Explore() {
         </motion.div>
       </AnimatePresence>
 
-      <section className="mt-20 p-8 md:p-12 bg-brand-navy text-white rounded-[2rem] relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-brand-gold/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+      <section className="mt-20 p-8 md:p-12 text-white rounded-xl relative overflow-hidden shadow-[0_10px_40px_-15px_rgba(0,0,0,0.1)]" style={{ backgroundColor: "var(--brand-primary, #1F3A5F)" }}>
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
         <div className="relative z-10 flex flex-col md:flex-row gap-12">
           <div className="md:w-1/3">
-            <h2 className="text-3xl font-serif mb-4">Tour Operators</h2>
-            <p className="text-white/70 leading-relaxed text-sm">
+            <h2 className="text-3xl md:text-4xl font-serif mb-4">Tour Operators</h2>
+            <p className="text-white/80 leading-relaxed text-lg">
               For those wishing to explore safaris or bespoke tours across Tanzania, we are happy to recommend trusted operators who can assist via WhatsApp.
             </p>
           </div>
-          <div className="md:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="md:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-8">
             {tourOperators.map((operator, i) => (
-              <div key={i} className="bg-white/10 p-6 rounded-2xl border border-white/10 backdrop-blur-sm flex flex-col h-full">
-                <h3 className="text-lg font-bold text-brand-gold mb-1">{operator.name}</h3>
-                <div className="flex items-center gap-2 text-white/70 mb-6">
-                  <Phone size={14} /> <span>{operator.phone}</span>
+              <div key={i} className="bg-white/10 p-8 rounded-xl border border-white/10 backdrop-blur-sm flex flex-col h-full justify-between">
+                <div>
+                  <h3 className="text-2xl font-serif mb-2 text-white">{operator.name}</h3>
+                  <div className="flex items-center gap-2 text-white/80 mb-6 text-lg">
+                    <Phone size={16} /> <span>{operator.phone}</span>
+                  </div>
                 </div>
-                <a 
-                  href={`https://wa.me/${operator.phone.replace(/[^0-9]/g, '')}`} 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="mt-auto w-full bg-brand-gold text-white px-4 py-3 rounded-xl font-medium hover:bg-brand-gold/90 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-brand-gold/20"
-                >
-                  <span>Chat on WhatsApp</span>
-                  <ChevronRight size={16} />
-                </a>
+                <div className="flex mt-auto">
+                  <a 
+                    href={`https://wa.me/${operator.phone.replace(/[^0-9]/g, '')}`} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-full text-white transition-opacity hover:opacity-90 font-medium text-sm"
+                    style={{ backgroundColor: '#25D366' }}
+                  >
+                    <span>Chat on WhatsApp</span>
+                    <ChevronRight size={16} />
+                  </a>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
+      </div>
     </div>
   );
 }
