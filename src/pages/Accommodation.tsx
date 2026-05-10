@@ -30,8 +30,7 @@ export default function Accommodation() {
           </div>
           <h3 className="text-2xl font-serif text-brand-navy mb-4">Stay Dates</h3>
           <p className="text-brand-navy/70 leading-relaxed mb-6">
-            The wedding festivities run from <strong>21st to 24th August 2026</strong>. 
-            All official wedding events and included accommodations will fall within these dates.
+            The wedding celebrations will take place from <strong>21st–24th August 2026</strong>. Accommodation during these dates will be provided for all guests by the bride and groom’s families, for this period.
           </p>
           <div className="p-4 bg-blue-50/50 rounded-xl border border-blue-100">
             <p className="text-sm text-brand-navy/80 flex items-start gap-2">
