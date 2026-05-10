@@ -4,6 +4,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { getGallery } from '../lib/api';
 import { Camera, Image as ImageIcon, Heart, ArrowLeft, Trophy, User, Filter, Flame } from 'lucide-react';
+import ImageModal from '../components/gallery/ImageModal';
 
 interface GalleryItem {
   id: string;
@@ -34,6 +35,7 @@ export default function ChallengeGallery() {
 
   const initialFilter = searchParams.get('challenge') || 'All Challenges';
   const [activeFilter, setActiveFilter] = useState(initialFilter);
+  const [modalData, setModalData] = useState<{items: GalleryItem[], index: number} | null>(null);
 
   const fetchGallery = useCallback(async () => {
     const data = await getGallery();
@@ -170,7 +172,8 @@ export default function ChallengeGallery() {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: i * 0.1 }}
                   key={photo.id} 
-                  className="relative group rounded-2xl overflow-hidden bg-gray-100 aspect-square sm:aspect-auto sm:h-64 border border-gray-100 shadow-sm"
+                  onClick={() => setModalData({ items: topPhotos, index: i })}
+                  className="relative group rounded-2xl overflow-hidden bg-gray-100 aspect-square sm:aspect-auto sm:h-64 border border-gray-100 shadow-sm cursor-pointer"
                 >
                   {photo.type === 'video' ? (
                     <video src={photo.file_url} className="w-full h-full object-cover" />
@@ -253,7 +256,7 @@ export default function ChallengeGallery() {
             </h2>
             
             {/* Filters */}
-            <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto pb-2 sm:pb-0 scrollbar-hide">
+            <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
               <Filter className="text-gray-400 w-4 h-4 shrink-0 hidden sm:block" />
               {['All Challenges', ...CHALLENGES].map(challenge => (
                 <button
@@ -278,7 +281,7 @@ export default function ChallengeGallery() {
             </div>
           ) : (
             <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6">
-              {filteredItems.map((item) => {
+              {filteredItems.map((item, i) => {
                 const hasVoted = votedImages.includes(item.id);
                 
                 return (
@@ -286,7 +289,8 @@ export default function ChallengeGallery() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     key={item.id} 
-                    className="break-inside-avoid bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 group"
+                    className="break-inside-avoid bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 group cursor-pointer"
+                    onClick={() => setModalData({ items: filteredItems, index: i })}
                   >
                     <div className="relative">
                       {item.type === 'video' ? (
@@ -312,7 +316,10 @@ export default function ChallengeGallery() {
                         <motion.button
                           whileHover={{ scale: hasVoted ? 1 : 1.05 }}
                           whileTap={{ scale: hasVoted ? 1 : 0.95 }}
-                          onClick={() => handleVote(item.id, item.votes)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleVote(item.id, item.votes);
+                          }}
                           disabled={hasVoted || votingId === item.id}
                           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all shadow-sm ${
                             hasVoted 
@@ -359,6 +366,23 @@ export default function ChallengeGallery() {
           )}
         </div>
       </div>
+      
+      <ImageModal
+        item={modalData !== null ? modalData.items[modalData.index] : null}
+        onClose={() => setModalData(null)}
+        onNext={
+          modalData !== null && modalData.index < modalData.items.length - 1
+            ? () => setModalData({ ...modalData, index: modalData.index + 1 })
+            : undefined
+        }
+        onPrev={
+          modalData !== null && modalData.index > 0
+            ? () => setModalData({ ...modalData, index: modalData.index - 1 })
+            : undefined
+        }
+        onVote={handleVote}
+        hasVoted={modalData !== null ? votedImages.includes(modalData.items[modalData.index].id) : false}
+      />
     </div>
   );
 }
