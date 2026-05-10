@@ -32,6 +32,16 @@ interface GalleryItem {
   file_url: string;
   type: 'image' | 'video';
   created_at: string;
+  uploaded_by?: string;
+  challenge_name?: string;
+}
+
+interface GuestMessage {
+  id: string;
+  name: string;
+  message: string;
+  created_at: string;
+  replies: { id: string }[];
 }
 
 interface StoryEntry {
@@ -88,6 +98,7 @@ export default function Dashboard() {
   const [travelInfo, setTravelInfo] = useState<TravelInfo | null>(null);
   const [settings, setSettings] = useState<Settings | null>(null);
   const [pages, setPages] = useState<Page[]>([]);
+  const [recentMessages, setRecentMessages] = useState<GuestMessage[]>([]);
   const [loading, setLoading] = useState(true);
 
   const mapUrl = supabase.storage.from('branding').getPublicUrl('seacliff-map.jpg').data.publicUrl;
@@ -221,6 +232,7 @@ export default function Dashboard() {
     fetchSettings();
     fetchPages();
     fetchAnalytics();
+    fetchRecentMessages();
 
     // Subscribe to real-time updates
     const rsvpChannel = supabase
@@ -390,6 +402,20 @@ export default function Dashboard() {
       setPages(data || []);
     } catch (error) {
       console.error('Error fetching pages:', error);
+    }
+  }
+
+  async function fetchRecentMessages() {
+    try {
+      const { data, error } = await supabase
+        .from('messages')
+        .select('*, replies(id)')
+        .order('created_at', { ascending: false })
+        .limit(10);
+      if (error) throw error;
+      setRecentMessages(data || []);
+    } catch (err) {
+      console.error('Error fetching recent messages:', err);
     }
   }
 
@@ -854,6 +880,102 @@ export default function Dashboard() {
                 </div>
               </div>
             </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+              {/* Recent Gallery Uploads Feed */}
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col h-[400px]">
+                <div className="px-6 py-4 border-b border-gray-100 sticky top-0 bg-white/90 backdrop-blur-sm z-10 flex justify-between items-center">
+                  <h4 className="font-semibold text-gray-800 flex items-center gap-2">
+                    <ImageIcon size={18} className="text-brand-gold" />
+                    Recent Gallery Uploads
+                  </h4>
+                </div>
+                <div className="p-4 overflow-y-auto flex-1">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {galleryItems.slice(0, 9).map(item => (
+                      <div key={item.id} className="group relative aspect-square bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
+                        {item.type === 'video' ? (
+                          <video src={item.file_url} className="w-full h-full object-cover" />
+                        ) : (
+                          <img src={item.file_url} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent opacity-0 group-hover:opacity-100 transition-opacity p-2 flex flex-col justify-end">
+                          <p className="text-white text-xs font-medium truncate">{item.uploaded_by || 'Anonymous'}</p>
+                          <p className="text-white/70 text-[10px]">{new Date(item.created_at).toLocaleDateString()}</p>
+                          <button
+                            onClick={async () => {
+                              if (!confirm('Delete this media?')) return;
+                              try {
+                                const fileName = item.file_url.split('/').pop();
+                                if (fileName) await supabase.storage.from('gallery').remove([fileName]);
+                                await supabase.from('gallery').delete().eq('id', item.id);
+                                fetchGallery();
+                                fetchAnalytics();
+                              } catch (error) {
+                                alert('Error deleting media');
+                              }
+                            }}
+                            className="absolute top-2 right-2 p-1.5 bg-red-600/90 hover:bg-red-600 text-white rounded-full transition-colors"
+                          >
+                            <Trash2 size={12} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                    {galleryItems.length === 0 && <p className="col-span-full text-sm text-gray-500 text-center py-8">No uploads yet.</p>}
+                  </div>
+                </div>
+              </div>
+
+              {/* Recent Messages Feed */}
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col h-[400px]">
+                <div className="px-6 py-4 border-b border-gray-100 sticky top-0 bg-white/90 backdrop-blur-sm z-10 flex justify-between items-center">
+                  <h4 className="font-semibold text-gray-800 flex items-center gap-2">
+                    <BookOpen size={18} className="text-brand-purple" />
+                    Recent Messages
+                  </h4>
+                </div>
+                <div className="overflow-y-auto flex-1">
+                  <div className="divide-y divide-gray-50">
+                    {recentMessages.map(msg => (
+                      <div key={msg.id} className="p-4 hover:bg-gray-50/50 transition-colors group">
+                        <div className="flex justify-between items-start mb-1">
+                          <p className="font-medium text-gray-900 text-sm">{msg.name}</p>
+                          <div className="flex items-center gap-2">
+                            <p className="text-xs text-gray-500">{new Date(msg.created_at).toLocaleDateString()}</p>
+                            <button
+                              onClick={async () => {
+                                if (!confirm('Delete this message?')) return;
+                                try {
+                                  await supabase.from('messages').delete().eq('id', msg.id);
+                                  fetchRecentMessages();
+                                  fetchAnalytics();
+                                } catch (error) {
+                                  alert('Error deleting message');
+                                }
+                              }}
+                              className="text-red-500/0 group-hover:text-red-500 hover:text-red-600 transition-colors"
+                              title="Delete Message"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        </div>
+                        <p className="text-sm text-gray-600 line-clamp-2 mb-2">{msg.message}</p>
+                        <div className="flex items-center gap-1.5">
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${
+                            msg.replies?.length ? 'bg-brand-purple/10 text-brand-purple' : 'bg-gray-100 text-gray-500'
+                          }`}>
+                            {msg.replies?.length ? `${msg.replies.length} Replies` : 'No Replies'}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                    {recentMessages.length === 0 && <p className="text-sm text-gray-500 text-center py-8">No messages yet.</p>}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div>
@@ -922,6 +1044,75 @@ export default function Dashboard() {
                   )}
                 </tbody>
               </table>
+            </div>
+          </div>
+
+          <div className="mt-8">
+            <h3 className="text-xl font-serif text-brand-navy mb-4">Photo Challenge Reports</h3>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+               <div className="overflow-x-auto">
+                 <table className="w-full text-left text-sm">
+                   <thead className="bg-gray-50 text-gray-600">
+                     <tr>
+                       <th className="px-6 py-3 font-medium w-24">Preview</th>
+                       <th className="px-6 py-3 font-medium">Participant</th>
+                       <th className="px-6 py-3 font-medium">Challenge Category</th>
+                       <th className="px-6 py-3 font-medium">Date</th>
+                       <th className="px-6 py-3 font-medium text-right">Actions</th>
+                     </tr>
+                   </thead>
+                   <tbody className="divide-y divide-gray-100">
+                     {galleryItems.filter(item => item.challenge_name).map((item) => (
+                       <tr key={item.id} className="hover:bg-gray-50 transition-colors">
+                         <td className="px-6 py-4">
+                           <div className="w-12 h-12 rounded-lg overflow-hidden border border-gray-200">
+                             {item.type === 'video' ? (
+                               <video src={item.file_url} className="w-full h-full object-cover" />
+                             ) : (
+                               <img src={item.file_url} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                             )}
+                           </div>
+                         </td>
+                         <td className="px-6 py-4 font-medium text-gray-900">{item.uploaded_by || 'Anonymous'}</td>
+                         <td className="px-6 py-4">
+                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-brand-gold/10 text-brand-gold">
+                             {item.challenge_name}
+                           </span>
+                         </td>
+                         <td className="px-6 py-4 text-gray-500">
+                           {new Date(item.created_at).toLocaleDateString()}
+                         </td>
+                         <td className="px-6 py-4 text-right">
+                           <button
+                             onClick={async () => {
+                               if (!confirm('Delete this challenge submission?')) return;
+                               try {
+                                 const fileName = item.file_url.split('/').pop();
+                                 if (fileName) await supabase.storage.from('gallery').remove([fileName]);
+                                 await supabase.from('gallery').delete().eq('id', item.id);
+                                 fetchGallery();
+                                 fetchAnalytics();
+                               } catch (error) {
+                                 alert('Error deleting submission');
+                               }
+                             }}
+                             className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors inline-block"
+                           >
+                             <Trash2 size={16} />
+                           </button>
+                         </td>
+                       </tr>
+                     ))}
+                     {galleryItems.filter(item => item.challenge_name).length === 0 && (
+                       <tr>
+                         <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
+                           No challenge submissions yet.
+                         </td>
+                       </tr>
+                     )}
+                   </tbody>
+                 </table>
+               </div>
             </div>
           </div>
         </div>
