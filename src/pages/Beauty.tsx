@@ -9,6 +9,7 @@ export default function Beauty() {
     { name: "Hair Styling (Party Look)", price: "$55" },
     { name: "Makeup (Subtle Look)", price: "$40" },
     { name: "Makeup (Party Glam Look)", price: "$60" },
+    { name: "Simple Hair & Makeup", price: "$65" },
     { name: "Lashes", price: "$10" },
   ];
 
@@ -35,7 +36,7 @@ export default function Beauty() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.2 }}
-        className="mb-16"
+        className="mb-8"
       >
         <div className="rounded-2xl p-8 md:p-12 text-center" style={{ backgroundColor: "rgba(var(--brand-secondary-rgb, 201, 164, 108), 0.05)", border: "1px solid rgba(var(--brand-secondary-rgb, 201, 164, 108), 0.2)" }}>
           <Sparkles className="w-8 h-8 mx-auto mb-6 opacity-60" style={{ color: "var(--brand-secondary, #C9A46C)" }} />
@@ -47,7 +48,7 @@ export default function Beauty() {
             <div className="bg-white/50 rounded-xl p-6 shadow-sm">
               <span className="block text-xs uppercase tracking-widest opacity-60 mb-2">Booking Deadline</span>
               <span className="text-xl md:text-2xl font-serif tracking-wide flex items-center justify-center gap-2" style={{ color: "var(--brand-primary, #1F3A5F)" }}>
-                <Calendar className="w-5 h-5 opacity-70" /> June 15th, 2026
+                <Calendar className="w-5 h-5 opacity-70" /> June 30th, 2026
               </span>
             </div>
           </div>
@@ -55,6 +56,25 @@ export default function Beauty() {
             "Kindly ensure your appointment is booked before the stated deadline to secure your preferred time slot."
           </p>
         </div>
+      </motion.div>
+
+      {/* Additional Information */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.3 }}
+        className="mb-16 rounded-2xl p-8 md:p-10"
+        style={{ 
+          backgroundColor: "rgba(var(--brand-secondary-rgb, 201, 164, 108), 0.03)", 
+          border: "1px solid rgba(var(--brand-secondary-rgb, 201, 164, 108), 0.15)" 
+        }}
+      >
+        <h3 className="text-lg md:text-xl font-serif mb-3 tracking-wide" style={{ color: "var(--brand-primary, #1F3A5F)" }}>
+          Additional Information
+        </h3>
+        <p className="text-sm md:text-base opacity-80 leading-relaxed font-light">
+          Complimentary draping will be available for the Wedding Ceremony on 22nd August 2026 on a first-come, first-served basis.
+        </p>
       </motion.div>
 
       <div className="grid lg:grid-cols-3 gap-12">
